@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    h1 {
+        @apply text-4xl;
+    }
+    h2 {
+        @apply text-3xl;
+    }
+    h3 {
+        @apply text-2xl;
+    }
+    h4 {
+        @apply text-xl;
+    }
+    h5 {
+        @apply text-lg;
+    }
+
+    :root {
+        @apply bg-midnight-900 text-white;
+
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    .rc-slider-rail {
+        @apply bg-midnight-700;
+    }
+
+    .rc-slider-track {
+        @apply bg-yellow-400/50;
+    }
+
+    .rc-slider-handle, .rc-slider-handle:hover {
+        @apply opacity-100 border-2 border-yellow-400 bg-midnight-800 ring-0 !ring-opacity-50 ring-yellow-400 transition-shadow duration-300;
+    }
+
+    .rc-slider-handle-dragging, .rc-slider-handle:focus-visible, .rc-slider-handle:active {
+        @apply !border-yellow-400 !shadow-none ring-4 ring-yellow-400;
+    }
+}
+
+.bg-grid {
+    background-size: 20px 20px;
+    background-image: radial-gradient(#151a29 1.25px, transparent 0);
+    background-position: -10px -10px;
+}
+
+@font-face {
+    font-family: 'Alexandria';
+    src: url('/Alexandria-Variable.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('/JetBrainsMono-Variable.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}

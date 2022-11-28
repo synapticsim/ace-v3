@@ -1,0 +1,9 @@
+{
+    "root": true,
+    "extends": [
+        "@synaptic-simulations/eslint-config"
+    ],
+    "rules": {
+        "react/button-has-type": "off"
+    }
+}

@@ -1,0 +1,71 @@
+import React from 'react';
+import { FiX } from 'react-icons/fi';
+import { AnimatePresence, motion, Variants } from 'framer-motion';
+
+const modalBgAnimation: Variants = {
+    hidden: {
+        opacity: 0,
+        pointerEvents: 'none',
+    },
+    visible: {
+        opacity: 1,
+        pointerEvents: 'auto',
+    },
+};
+
+const modalAnimation: Variants = {
+    hidden: {
+        y: '100px',
+        opacity: 0,
+    },
+    visible: {
+        y: '0',
+        opacity: 1,
+    },
+};
+
+export interface ModalProps {
+    title: string;
+    show: boolean;
+    onExit: () => void;
+    children?: React.ReactNode;
+}
+
+export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) => {
+    return (
+        <AnimatePresence>
+            {show && (
+                <motion.div
+                    className="absolute w-screen h-screen z-50 top-0 bg-black/20 flex place-items-center"
+                    variants={modalBgAnimation}
+                    transition={{ duration: 0.2 }}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                >
+                    <motion.div
+                        className="relative max-w-1/2 mx-auto bg-midnight-800 rounded-2xl shadow-2xl"
+                        variants={modalAnimation}
+                        transition={{
+                            duration: 0.2,
+                            type: 'spring',
+                            damping: 25,
+                            stiffness: 200,
+                        }}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                    >
+                        <div className="px-8 py-5 bg-midnight-700 rounded-t-2xl flex justify-between items-center">
+                            <h3 className="font-medium">{title}</h3>
+                            <FiX size={30} className="text-midnight-400 cursor-pointer" onClick={onExit} />
+                        </div>
+                        <div className="p-8">
+                            {children}
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+};

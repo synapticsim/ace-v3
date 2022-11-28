@@ -1,0 +1,41 @@
+{
+  "name": "ace",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@pronestor/react-zoom-pan-pinch": "^2.4.3",
+    "@reduxjs/toolkit": "^1.9.0",
+    "@tauri-apps/api": "^1.1.0",
+    "classnames": "^2.3.2",
+    "formik": "^2.2.9",
+    "framer-motion": "^7.6.12",
+    "rc-slider": "^10.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.6.0",
+    "react-redux": "^8.0.5",
+    "react-router": "^6.4.3",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "@synaptic-simulations/eslint-config": "^1.0.1",
+    "@tauri-apps/cli": "^1.1.0",
+    "@types/node": "^18.7.10",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.0.0",
+    "autoprefixer": "^10.4.13",
+    "eslint": "^8.22.0",
+    "postcss": "^8.4.19",
+    "tailwindcss": "^3.2.4",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.2"
+  }
+}
