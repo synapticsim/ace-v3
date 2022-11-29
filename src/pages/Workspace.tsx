@@ -22,9 +22,10 @@ export const Workspace: React.FC = () => {
                 velocityAnimation={{ equalToMove: false }}
             >
                 <TransformComponent wrapperClass="w-screen h-screen overflow-hidden">
-                    <div className="w-[10000px] h-[5000px] bg-grid">
+                    <div className="w-[15000px] h-[5000px] bg-grid">
                         <Instrument name="CTP" x={5000 - 200} y={2500 - 100} width={260} height={260} />
                         <Instrument name="PFD" x={5000 + 100} y={2500 - 100} width={1480} height={1110} />
+                        <Instrument name="DisplayUnits" x={5000 + 1600} y={2500 - 100} width={5920} height={2220} />
                     </div>
                 </TransformComponent>
             </TransformWrapper>

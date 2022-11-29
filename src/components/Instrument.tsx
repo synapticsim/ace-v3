@@ -14,8 +14,11 @@ interface InstrumentProps {
 }
 
 export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, height }) => {
-    const ref = useRef<HTMLIFrameElement>(null);
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+
     const updateInterval = useRef<number>();
+
+    const interactionMode = useRef(false);
 
     const baseURL = useAsyncMemo<string | undefined>(async () => {
         switch (await platform()) {
@@ -27,29 +30,55 @@ export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, heigh
     const setupInstrument = useCallback(() => {
         clearInterval(updateInterval.current);
 
-        const iframe = ref.current;
+        const iframe = iframeRef.current;
         if (iframe && iframe.contentWindow) {
             installShims(iframe.contentWindow);
             updateInterval.current = window.setInterval(() => (
                 iframe.contentDocument?.getElementById('ROOT_ELEMENT')?.dispatchEvent(new CustomEvent('update'))
             ), 50);
         }
-    }, [ref]);
+    }, [iframeRef]);
 
     const refresh = useCallback(() => {
-        const iframe = ref.current;
+        const iframe = iframeRef.current;
         if (iframe && iframe.contentWindow) {
             iframe.contentWindow.location.reload();
             window.setTimeout(() => setupInstrument(), 10);
         }
-    }, [ref, setupInstrument]);
+    }, [iframeRef, setupInstrument]);
 
-    useEffect(() => setupInstrument(), [ref, setupInstrument]);
+    const handleKeyDown = useCallback((event: KeyboardEvent) => {
+        if (event.key === 'Enter' && iframeRef.current) {
+            interactionMode.current = !interactionMode.current;
+            if (interactionMode.current) {
+                iframeRef.current.style.pointerEvents = 'auto';
+            } else {
+                iframeRef.current.style.pointerEvents = 'none';
+            }
+        }
+    }, [iframeRef]);
+
+    const handleMouseEnter = useCallback(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        iframeRef.current?.contentWindow?.addEventListener('keydown', handleKeyDown);
+    }, [iframeRef, handleKeyDown]);
+
+    const handleMouseLeave = useCallback(() => {
+        document.removeEventListener('keydown', handleKeyDown);
+        iframeRef.current?.contentWindow?.removeEventListener('keydown', handleKeyDown);
+    }, [iframeRef, handleKeyDown]);
+
+    useEffect(() => setupInstrument(), [iframeRef, setupInstrument]);
 
     if (baseURL === undefined) return null;
 
     return (
-        <div className="absolute shadow-2xl" style={{ left: x, top: y, width, height }}>
+        <div
+            className="absolute shadow-2xl"
+            style={{ left: x, top: y, width, height }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
             <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl">
                 <div className="px-4 py-2 flex gap-4 items-center">
                     <h4 className="font-medium">{name}</h4>
@@ -60,11 +89,11 @@ export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, heigh
                 <iframe
                     name={name}
                     title={name}
-                    ref={ref}
+                    ref={iframeRef}
                     width={width}
                     height={height}
                     tabIndex={-1}
-                    className="pointer-events-none"
+                    style={{ pointerEvents: 'none' }}
                     srcDoc={renderToString(
                         <html>
                             <head>
