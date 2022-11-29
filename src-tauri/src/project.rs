@@ -1,8 +1,12 @@
-use crate::CurrentProject;
+use crate::DiscordClient;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use std::sync::RwLock;
 use tauri::State;
+
+#[derive(Debug, Default)]
+pub struct CurrentProject(pub RwLock<Option<(PathBuf, Project)>>);
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ProjectPaths {
@@ -19,9 +23,10 @@ pub struct Project {
 
 #[tauri::command]
 pub fn create_project(
-    current_project: State<CurrentProject>,
     path: PathBuf,
     mut project: Project,
+    current_project: State<CurrentProject>,
+    discord: State<DiscordClient>,
 ) -> Result<Project, String> {
     let config_file = path.clone().join(".ace/project.json");
     if config_file.exists() {
@@ -29,9 +34,24 @@ pub fn create_project(
     }
 
     // Convert absolute paths to relative
-    project.paths.instruments = project.paths.instruments.strip_prefix(&path).unwrap().to_path_buf();
-    project.paths.bundles = project.paths.bundles.strip_prefix(&path).unwrap().to_path_buf();
-    project.paths.html_ui = project.paths.html_ui.strip_prefix(&path).unwrap().to_path_buf();
+    project.paths.instruments = project
+        .paths
+        .instruments
+        .strip_prefix(&path)
+        .unwrap()
+        .to_path_buf();
+    project.paths.bundles = project
+        .paths
+        .bundles
+        .strip_prefix(&path)
+        .unwrap()
+        .to_path_buf();
+    project.paths.html_ui = project
+        .paths
+        .html_ui
+        .strip_prefix(&path)
+        .unwrap()
+        .to_path_buf();
 
     let data = serde_json::to_string(&project).map_err(|e| e.to_string())?;
     fs::create_dir_all(config_file.parent().unwrap()).map_err(|e| e.to_string())?;
@@ -39,13 +59,16 @@ pub fn create_project(
 
     *current_project.0.write().unwrap() = Some((path, project.clone()));
 
+    discord.inner().set_project(&project.name);
+
     Ok(project)
 }
 
 #[tauri::command]
 pub fn load_project(
-    current_project: State<CurrentProject>,
     path: PathBuf,
+    current_project: State<CurrentProject>,
+    discord: State<DiscordClient>,
 ) -> Result<Project, String> {
     let config_file = path.clone().join(".ace/project.json");
     if !config_file.exists() {
@@ -57,12 +80,19 @@ pub fn load_project(
 
     *current_project.0.write().unwrap() = Some((path, project.clone()));
 
+    discord.inner().set_project(&project.name);
+
     Ok(project)
 }
 
 #[tauri::command]
-pub fn unload_project(current_project: State<CurrentProject>) -> Result<(), String> {
+pub fn unload_project(
+    current_project: State<CurrentProject>,
+    discord: State<DiscordClient>,
+) -> Result<(), String> {
     *current_project.0.write().unwrap() = None;
+
+    discord.inner().set_idle();
 
     Ok(())
 }
