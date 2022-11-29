@@ -5,12 +5,8 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { Modal, ModalProps } from './index';
 import { FileInput, Input } from '../Input';
 import { ProjectConfig } from '../../types';
-import { newProjectSchema } from '../../types/forms';
-import { Button } from '../Button'
-
-interface NewProjectValues extends ProjectConfig {
-    root: string;
-}
+import { newProjectSchema } from '../../utils/schema';
+import { Button } from '../Button';
 
 type NewProjectModalProps = Omit<ModalProps, 'title'>;
 

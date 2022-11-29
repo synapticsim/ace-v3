@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import { FiRefreshCcw } from 'react-icons/fi';
+import { platform } from '@tauri-apps/api/os';
 import { installShims } from '../shims';
+import { useAsyncMemo } from '../utils/hooks';
 
 interface InstrumentProps {
     name: string;
@@ -14,6 +16,13 @@ interface InstrumentProps {
 export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, height }) => {
     const ref = useRef<HTMLIFrameElement>(null);
     const updateInterval = useRef<number>();
+
+    const baseURL = useAsyncMemo<string | undefined>(async () => {
+        switch (await platform()) {
+            case 'win32': return 'https://ace.localhost';
+            default: return 'ace://localhost';
+        }
+    }, [], undefined);
 
     const setupInstrument = useCallback(() => {
         clearInterval(updateInterval.current);
@@ -36,6 +45,8 @@ export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, heigh
 
     useEffect(() => setupInstrument(), [setupInstrument]);
 
+    if (baseURL === undefined) return null;
+
     return (
         <div className="absolute shadow-2xl" style={{ left: x, top: y, width, height }}>
             <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl">
@@ -54,8 +65,8 @@ export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, heigh
                     srcDoc={renderToString(
                         <html>
                             <head>
-                                <script type="text/javascript" defer crossOrigin="anonymous" src={`https://ace.localhost/project/${name}/bundle.js`} />
-                                <link rel="stylesheet" href={`https://ace.localhost/project/${name}/bundle.css`} />
+                                <script type="text/javascript" defer crossOrigin="anonymous" src={`${baseURL}/project/${name}/bundle.js`} />
+                                <link rel="stylesheet" href={`${baseURL}/project/${name}/bundle.css`} />
                             </head>
                             <body style={{ overflow: 'hidden', margin: 0 }}>
                                 <div id="ROOT_ELEMENT">

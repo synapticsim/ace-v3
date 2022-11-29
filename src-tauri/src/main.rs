@@ -32,26 +32,31 @@ impl ResourceRouter {
     }
 }
 
-pub struct DiscordClient(RwLock<DiscordIpcClient>);
+pub struct DiscordClient(RwLock<Option<DiscordIpcClient>>);
 
 impl DiscordClient {
     fn new() -> Self {
         let mut discord = DiscordIpcClient::new("1046278806685622302").unwrap();
-        discord.connect().unwrap();
-        discord
-            .set_activity(
-                Activity::new().state("Idling").timestamps(
-                    Timestamps::new().start(
-                        SystemTime::now()
-                            .duration_since(UNIX_EPOCH)
-                            .unwrap()
-                            .as_secs() as i64,
-                    ),
-                ),
-            )
-            .unwrap();
+        let client = match discord.connect() {
+            Ok(_) => {
+                discord
+                    .set_activity(
+                        Activity::new().state("Idling").timestamps(
+                            Timestamps::new().start(
+                                SystemTime::now()
+                                    .duration_since(UNIX_EPOCH)
+                                    .unwrap()
+                                    .as_secs() as i64,
+                            ),
+                        ),
+                    )
+                    .unwrap();
+                Some(discord)
+            },
+            Err(_) => None,
+        };
 
-        DiscordClient(RwLock::new(discord))
+        DiscordClient(RwLock::new(client))
     }
 }
 

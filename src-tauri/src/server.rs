@@ -36,12 +36,17 @@ pub fn handle_ace_request(app: &AppHandle<Wry>, req: &Request) -> Result<Respons
                     .join(project.paths.html_ui.as_path())
                     .join(matched.params.get("path").unwrap()),
             };
-
-            ResponseBuilder::new()
-                .status(200)
-                .header("Access-Control-Allow-Origin", "*")
-                .body(fs::read(file_path).map_err(|_| "Invalid path")?)
-                .unwrap()
+            match fs::read(file_path) {
+                Ok(data) => ResponseBuilder::new()
+                    .status(200)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .body(data)
+                    .unwrap(),
+                Err(_) => ResponseBuilder::new()
+                    .status(404)
+                    .body("Unknown path".as_bytes().to_vec())
+                    .unwrap(),
+            }
         }
         Err(_) => ResponseBuilder::new()
             .status(404)
