@@ -1,64 +1,83 @@
 import React, { useMemo, useState } from 'react';
-import { FiChevronDown, FiChevronLeft, FiChevronRight, FiSliders } from 'react-icons/fi';
-import { Input, SliderInput } from '../Input';
+import { FiChevronLeft, FiChevronRight, FiSliders } from 'react-icons/fi';
+import { RiPushpin2Line } from 'react-icons/ri';
+import classNames from 'classnames';
+import { Input } from '../Input';
 import { ProjectState, useProjectDispatch, useProjectSelector } from '../../redux';
-import { setSimVar, SimVar } from '../../redux/simVarSlice';
+import { SimVar, togglePin } from '../../redux/simVarSlice';
 import { Menu } from './index';
-import classNames from 'classnames'
 
 interface SimVarSliderProps {
-    name: string;
-    unit: string;
+    simVar: SimVar;
 }
 
+const SimVarSlider: React.FC<SimVarSliderProps> = ({ simVar }) => {
+    const dispatch = useProjectDispatch();
+
+    return (
+        <h6 className="font-mono flex items-center gap-1">
+            <button onClick={() => dispatch(togglePin(`${simVar.type}:${simVar.name}`))}>
+                <RiPushpin2Line
+                    size={20}
+                    className={classNames({ 'text-yellow-400': simVar.pinned, 'text-midnight-700': !simVar.pinned })}
+                />
+            </button>
+            <FiChevronRight size={24} />
+            {simVar.name}
+        </h6>
+    );
+};
+
 interface SimVarSectionProps {
-    type: string;
     simVars: SimVar[];
 }
 
-export const SimVarSection: React.FC<SimVarSectionProps> = ({ type, simVars }) => {
+const SimVarSection: React.FC<SimVarSectionProps> = ({ simVars }) => (
+    <div
+        className={classNames(
+            'px-6 py-5 max-h-80 flex flex-col gap-2 overflow-y-scroll',
+            'scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-midnight-700/25',
+        )}
+    >
+        {simVars.map((simVar) => <SimVarSlider key={simVar.key} simVar={simVar} />)}
+    </div>
+);
+
+interface CollapsibleSimVarSectionProps extends SimVarSectionProps {
+    title: React.ReactNode;
+}
+
+const CollapsibleSimVarSection: React.FC<CollapsibleSimVarSectionProps> = ({ title, simVars }) => {
     const [collapsed, setCollapsed] = useState<boolean>(false);
 
-    const filtered = useMemo(() => simVars.filter((v) => v.type === type), [type, simVars]);
-
-    if (filtered.length === 0) return null;
+    if (simVars.length === 0) return null;
 
     return (
         <>
-            <div className="px-6 py-3 bg-midnight-700/50 flex items-center justify-between">
-                <h5>
-                    <big className="text-yellow-400">{type}</big> Vars
-                </h5>
-                <button onClick={() => setCollapsed(!collapsed)}>
-                    <FiChevronLeft
-                        size={30}
-                        className={classNames(
-                            'text-midnight-500 duration-200',
-                            { 'rotate-0': collapsed, '-rotate-90': !collapsed },
-                        )}
-                    />
-                </button>
-            </div>
+            <button
+                className="w-full px-6 py-3 bg-midnight-700/50 flex items-center justify-between shadow-sm"
+                onClick={() => setCollapsed(!collapsed)}
+            >
+                <h5>{title}</h5>
+                <FiChevronLeft
+                    size={30}
+                    className={classNames(
+                        'text-midnight-500 duration-200',
+                        { 'rotate-0': collapsed, '-rotate-90': !collapsed },
+                    )}
+                />
+            </button>
             <div
                 className={classNames(
                     'overflow-hidden duration-300 ease-out',
                     { 'max-h-0': collapsed, 'max-h-80': !collapsed },
                 )}
             >
-                <div className="px-6 py-5 max-h-80 flex flex-col gap-2 overflow-y-scroll">
-                    {filtered
-                        .sort((a, b) => (a.name > b.name ? 1 : -1))
-                        .map(({ name }) => (
-                            <h6 key={name} className="font-mono flex gap-2">
-                                <FiChevronRight size={24} />
-                                {name}
-                            </h6>
-                        ))}
-                </div>
+                <SimVarSection simVars={simVars} />
             </div>
         </>
     );
-}
+};
 
 interface SimVarsMenuProps {
     show?: boolean;
@@ -69,7 +88,9 @@ interface SimVarsMenuProps {
 export const SimVarsMenu: React.FC<SimVarsMenuProps> = ({ ...props }) => {
     const [filter, setFilter] = useState<string>('');
 
-    const simVars = useProjectSelector((state: ProjectState) => Object.values(state.simVars));
+    const simVars = useProjectSelector(
+        (state: ProjectState) => Object.values(state.simVars).sort((a, b) => (a.name > b.name ? 1 : -1)),
+    );
 
     const filtered = useMemo(
         () => simVars.filter((v) => v.name.toLowerCase().includes(filter.toLowerCase())),
@@ -85,8 +106,15 @@ export const SimVarsMenu: React.FC<SimVarsMenuProps> = ({ ...props }) => {
                     onChange={(e) => setFilter(e.target.value)}
                 />
             </div>
-            <SimVarSection type="A" simVars={filtered} />
-            <SimVarSection type="L" simVars={filtered} />
+            <SimVarSection simVars={filtered.filter((v) => v.pinned)} />
+            <CollapsibleSimVarSection
+                title={<><big className="text-yellow-400">A</big> Vars</>}
+                simVars={filtered.filter((v) => v.type === 'A')}
+            />
+            <CollapsibleSimVarSection
+                title={<><big className="text-yellow-400">L</big> Vars</>}
+                simVars={filtered.filter((v) => v.type === 'L')}
+            />
         </Menu>
     );
 };

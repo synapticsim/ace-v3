@@ -1,21 +1,26 @@
 import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 
-export function parseSimVarName(name: string): { type: 'A' | 'L', name: string, key: string } | undefined {
-    const match = name.match(/^(?:(?<type>[AL]):)?(?<name>.*)$/i);
+type SimVarType = 'A' | 'E' | 'L';
+
+export function parseSimVarName(name: string): { type: SimVarType, name: string, index: number, key: string } | undefined {
+    const match = name.match(/^(?:(?<type>[AEL]):)?(?<name>[^:]+)(?::(?<index>\d))?$/i);
     if (match) {
-        const groups = match.groups as { type?: 'A' | 'L', name?: string };
+        const groups = match.groups as { type?: SimVarType, name?: string, index?: number };
         return {
             type: groups.type ?? 'A',
             name: groups.name ?? '',
-            key: `${groups.type ?? 'A'}:${groups.name ?? ''}`,
+            index: groups.index ?? 0,
+            key: `${groups.type ?? 'A'}:${groups.name ?? ''}:${groups.index ?? 0}`,
         };
     }
     return undefined;
 }
 
 export interface SimVar {
-    type: 'A' | 'L';
+    type: SimVarType;
+    key: string;
     name: string;
+    index: number;
     unit: string;
     value: string | number;
     pinned?: boolean;
@@ -31,7 +36,7 @@ const simVarSlice = createSlice({
             const parsedName = parseSimVarName(name);
 
             if (parsedName) {
-                if (name in state) {
+                if (parsedName.key in state) {
                     state[parsedName.key].unit = unit;
                     state[parsedName.key].value = value;
                 } else {
@@ -39,10 +44,19 @@ const simVarSlice = createSlice({
                 }
             }
         },
+        togglePin(state, action: PayloadAction<string>) {
+            const parsedName = parseSimVarName(action.payload);
+
+            if (parsedName) {
+                if (parsedName.key in state) {
+                    state[parsedName.key].pinned = !state[parsedName.key].pinned;
+                }
+            }
+        },
     },
 });
 
-export const { setSimVar } = simVarSlice.actions;
+export const { setSimVar, togglePin } = simVarSlice.actions;
 export const simVarsReducer = simVarSlice.reducer;
 export type SimVarState = ReturnType<typeof simVarSlice.reducer>;
 

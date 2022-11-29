@@ -32,5 +32,8 @@ module.exports = {
         'rc-slider-track',
         'rc-slider-handle',
         'rc-slider-handle-dragging',
-    ]
-}
+    ],
+    plugins: [
+        require('tailwind-scrollbar')({ nocompatible: true }),
+    ],
+};
