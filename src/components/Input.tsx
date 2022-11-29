@@ -6,13 +6,13 @@ import Slider, { SliderProps } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-    label: string;
+    label?: string;
     error?: string;
 }
 
 export const Input: React.FC<InputProps> = ({ label, error, className, ...props }) => (
     <div className="relative flex flex-col gap-1">
-        <label htmlFor={props.name}>{label}</label>
+        {label && <label htmlFor={props.name}>{label}</label>}
         <input
             id={props.name}
             className={classNames(
@@ -57,6 +57,7 @@ export const FileInput: React.FC<FileInputProps> = ({ options, onFileSelect, ...
     }, [options, onFileSelect]);
 
     return (
+        // TODO: Replace with type="file"
         <Input
             readOnly
             value={currentValue && !Array.isArray(currentValue) ? currentValue : ''}

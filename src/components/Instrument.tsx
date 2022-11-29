@@ -37,13 +37,14 @@ export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, heigh
     }, [ref]);
 
     const refresh = useCallback(() => {
-        if (ref.current && ref.current.contentWindow) {
-            ref.current.contentWindow.location.reload();
+        const iframe = ref.current;
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.location.reload();
             window.setTimeout(() => setupInstrument(), 10);
         }
     }, [ref, setupInstrument]);
 
-    useEffect(() => setupInstrument(), [setupInstrument]);
+    useEffect(() => setupInstrument(), [ref, setupInstrument]);
 
     if (baseURL === undefined) return null;
 
@@ -57,10 +58,12 @@ export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, heigh
             </div>
             <div className="absolute w-full h-full box-content border-2 border-midnight-800 bg-black">
                 <iframe
+                    name={name}
                     title={name}
                     ref={ref}
                     width={width}
                     height={height}
+                    tabIndex={-1}
                     className="pointer-events-none"
                     srcDoc={renderToString(
                         <html>

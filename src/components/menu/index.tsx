@@ -24,12 +24,15 @@ export const Menu: React.FC<MenuProps> = ({ title, icon, show, onClick, onExit, 
             >
                 {icon}
             </button>
+            {/* TODO: Don't unmount component, just hide */}
             <AnimatePresence>
                 {show && (
-                    <div className="absolute left-28 top-4 w-96 bg-midnight-800 shadow-2xl rounded-2xl z-30">
-                        <div className="px-6 py-4 bg-midnight-700 rounded-t-2xl flex justify-between items-center">
+                    <div className="absolute left-28 top-4 w-96 bg-midnight-800 shadow-2xl rounded-2xl z-30 overflow-hidden">
+                        <div className="px-6 py-4 bg-midnight-700 flex justify-between items-center">
                             <h4 className="font-medium">{title}</h4>
-                            <FiX size={30} className="text-midnight-400 cursor-pointer" onClick={onExit} />
+                            <button onClick={onExit}>
+                                <FiX size={30} className="text-midnight-400" />
+                            </button>
                         </div>
                         {children}
                     </div>
