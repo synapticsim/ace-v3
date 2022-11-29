@@ -2,9 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiSliders } from 'react-icons/fi';
 import { RiPushpin2Line } from 'react-icons/ri';
 import classNames from 'classnames';
-import { Input } from '../Input';
+import { Input, SliderInput } from '../Input';
 import { ProjectState, useProjectDispatch, useProjectSelector } from '../../redux';
-import { SimVar, togglePin } from '../../redux/simVarSlice';
+import { setSimVar, SimVar, togglePin } from '../../redux/simVarSlice';
 import { Menu } from './index';
 
 interface SimVarSliderProps {
@@ -14,17 +14,48 @@ interface SimVarSliderProps {
 const SimVarSlider: React.FC<SimVarSliderProps> = ({ simVar }) => {
     const dispatch = useProjectDispatch();
 
+    const [collapsed, setCollapsed] = useState<boolean>(true);
+
     return (
-        <h6 className="font-mono flex items-center gap-1">
-            <button onClick={() => dispatch(togglePin(`${simVar.type}:${simVar.name}`))}>
-                <RiPushpin2Line
-                    size={20}
-                    className={classNames({ 'text-yellow-400': simVar.pinned, 'text-midnight-700': !simVar.pinned })}
-                />
-            </button>
-            <FiChevronRight size={24} />
-            {simVar.name}
-        </h6>
+        <div>
+            <div className="flex items-center justify-between gap-1">
+                <button className="flex items-center gap-1" onClick={() => setCollapsed(!collapsed)}>
+                    <FiChevronRight
+                        size={24}
+                        className={classNames(
+                            'duration-200',
+                            { 'rotate-0': collapsed, 'rotate-90': !collapsed },
+                        )}
+                    />
+                    <h6 className="font-mono">{simVar.name}</h6>
+                </button>
+                <button className="mr-0.5" onClick={() => dispatch(togglePin(simVar.key))}>
+                    <RiPushpin2Line
+                        size={20}
+                        className={classNames({ 'text-yellow-400': simVar.pinned, 'text-midnight-700': !simVar.pinned })}
+                    />
+                </button>
+            </div>
+            <div
+                className={classNames(
+                    'px-3 overflow-hidden duration-300 ease-out',
+                    { 'max-h-0': collapsed, 'max-h-20': !collapsed },
+                )}
+            >
+                <div className="py-3">
+                    <SliderInput
+                        min={0}
+                        max={100}
+                        value={simVar.value as number}
+                        onChange={(value) => dispatch(setSimVar({
+                            name: simVar.key,
+                            unit: simVar.unit,
+                            value: value as number,
+                        }))}
+                    />
+                </div>
+            </div>
+        </div>
     );
 };
 
@@ -48,14 +79,14 @@ interface CollapsibleSimVarSectionProps extends SimVarSectionProps {
 }
 
 const CollapsibleSimVarSection: React.FC<CollapsibleSimVarSectionProps> = ({ title, simVars }) => {
-    const [collapsed, setCollapsed] = useState<boolean>(false);
+    const [collapsed, setCollapsed] = useState<boolean>(true);
 
     if (simVars.length === 0) return null;
 
     return (
         <>
             <button
-                className="w-full px-6 py-3 bg-midnight-700/50 flex items-center justify-between shadow-sm"
+                className="w-full px-6 py-3 bg-midnight-700/50 border-t-2 border-t-midnight-700 flex items-center justify-between shadow-sm"
                 onClick={() => setCollapsed(!collapsed)}
             >
                 <h5>{title}</h5>
@@ -106,7 +137,7 @@ export const SimVarsMenu: React.FC<SimVarsMenuProps> = ({ ...props }) => {
                     onChange={(e) => setFilter(e.target.value)}
                 />
             </div>
-            <SimVarSection simVars={filtered.filter((v) => v.pinned)} />
+            <SimVarSection simVars={simVars.filter((v) => v.pinned)} />
             <CollapsibleSimVarSection
                 title={<><big className="text-yellow-400">A</big> Vars</>}
                 simVars={filtered.filter((v) => v.type === 'A')}

@@ -14,7 +14,13 @@ export const Workspace: React.FC = () => {
 
     return (
         <Provider store={projectStore} context={ProjectStoreContext}>
-            <TransformWrapper centerOnInit minScale={0.25} initialScale={0.25}>
+            <TransformWrapper
+                centerOnInit
+                minScale={0.25}
+                initialScale={0.25}
+                wheel={{ step: 0.15 }}
+                velocityAnimation={{ equalToMove: false }}
+            >
                 <TransformComponent wrapperClass="w-screen h-screen overflow-hidden">
                     <div className="w-[10000px] h-[5000px] bg-grid">
                         <Instrument name="CTP" x={5000 - 200} y={2500 - 100} width={260} height={260} />
