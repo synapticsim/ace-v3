@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiSliders } from 'react-icons/fi';
 import { RiPushpin2Line } from 'react-icons/ri';
 import classNames from 'classnames';
@@ -7,11 +7,14 @@ import { ProjectState, useProjectDispatch, useProjectSelector } from '../../redu
 import { setSimVar, SimVar, togglePin } from '../../redux/simVarSlice';
 import { Menu } from './index';
 
+const formatKey = (v: SimVar): string => `${v.type}:${v.name}:${v.index}`;
+
 interface SimVarSliderProps {
-    simVar: SimVar;
+    name: string;
 }
 
-const SimVarSlider: React.FC<SimVarSliderProps> = ({ simVar }) => {
+const SimVarSlider: React.FC<SimVarSliderProps> = ({ name }) => {
+    const simVar = useProjectSelector((state: ProjectState) => state.simVars[name]);
     const dispatch = useProjectDispatch();
 
     const [collapsed, setCollapsed] = useState<boolean>(true);
@@ -27,9 +30,12 @@ const SimVarSlider: React.FC<SimVarSliderProps> = ({ simVar }) => {
                             { 'rotate-0': collapsed, 'rotate-90': !collapsed },
                         )}
                     />
-                    <h6 className="font-mono">{simVar.name}</h6>
+                    <h6 className="font-mono text-left">
+                        {simVar.name}
+                        {simVar.index > 0 && <span className="text-yellow-400">:{simVar.index}</span>}
+                    </h6>
                 </button>
-                <button className="mr-0.5" onClick={() => dispatch(togglePin(simVar.key))}>
+                <button className="mr-0.5" onClick={() => dispatch(togglePin({ key: formatKey(simVar) }))}>
                     <RiPushpin2Line
                         size={20}
                         className={classNames({ 'text-yellow-400': simVar.pinned, 'text-midnight-700': !simVar.pinned })}
@@ -48,7 +54,7 @@ const SimVarSlider: React.FC<SimVarSliderProps> = ({ simVar }) => {
                         max={100}
                         value={simVar.value as number}
                         onChange={(value) => dispatch(setSimVar({
-                            name: simVar.key,
+                            key: formatKey(simVar),
                             unit: simVar.unit,
                             value: value as number,
                         }))}
@@ -60,28 +66,32 @@ const SimVarSlider: React.FC<SimVarSliderProps> = ({ simVar }) => {
 };
 
 interface SimVarSectionProps {
-    simVars: SimVar[];
+    filter: (v: SimVar) => boolean;
 }
 
-const SimVarSection: React.FC<SimVarSectionProps> = ({ simVars }) => (
-    <div
-        className={classNames(
-            'px-6 py-5 max-h-80 flex flex-col gap-2 overflow-y-scroll',
-            'scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-midnight-700/25',
-        )}
-    >
-        {simVars.map((simVar) => <SimVarSlider key={simVar.key} simVar={simVar} />)}
-    </div>
-);
+const SimVarSection: React.FC<SimVarSectionProps> = ({ filter }) => {
+    const simVars = useProjectSelector(
+        (state: ProjectState) => Object.values(state.simVars).filter(filter),
+    );
+
+    return (
+        <div
+            className={classNames(
+                'px-6 py-5 max-h-80 flex flex-col gap-2 overflow-y-scroll',
+                'scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-midnight-700/25',
+            )}
+        >
+            {simVars.map((v) => <SimVarSlider key={formatKey(v)} name={formatKey(v)} />)}
+        </div>
+    );
+};
 
 interface CollapsibleSimVarSectionProps extends SimVarSectionProps {
     title: React.ReactNode;
 }
 
-const CollapsibleSimVarSection: React.FC<CollapsibleSimVarSectionProps> = ({ title, simVars }) => {
+const CollapsibleSimVarSection: React.FC<CollapsibleSimVarSectionProps> = ({ title, filter }) => {
     const [collapsed, setCollapsed] = useState<boolean>(true);
-
-    if (simVars.length === 0) return null;
 
     return (
         <>
@@ -104,7 +114,7 @@ const CollapsibleSimVarSection: React.FC<CollapsibleSimVarSectionProps> = ({ tit
                     { 'max-h-0': collapsed, 'max-h-80': !collapsed },
                 )}
             >
-                <SimVarSection simVars={simVars} />
+                <SimVarSection filter={filter} />
             </div>
         </>
     );
@@ -119,15 +129,6 @@ interface SimVarsMenuProps {
 export const SimVarsMenu: React.FC<SimVarsMenuProps> = ({ ...props }) => {
     const [filter, setFilter] = useState<string>('');
 
-    const simVars = useProjectSelector(
-        (state: ProjectState) => Object.values(state.simVars).sort((a, b) => (a.name > b.name ? 1 : -1)),
-    );
-
-    const filtered = useMemo(
-        () => simVars.filter((v) => v.name.toLowerCase().includes(filter.toLowerCase())),
-        [simVars, filter],
-    );
-
     return (
         <Menu title="SimVars" icon={<FiSliders size={25} />} {...props}>
             <div className="px-6 py-5">
@@ -137,14 +138,14 @@ export const SimVarsMenu: React.FC<SimVarsMenuProps> = ({ ...props }) => {
                     onChange={(e) => setFilter(e.target.value)}
                 />
             </div>
-            <SimVarSection simVars={simVars.filter((v) => v.pinned)} />
+            <SimVarSection filter={(v) => v.pinned ?? false} />
             <CollapsibleSimVarSection
                 title={<><big className="text-yellow-400">A</big> Vars</>}
-                simVars={filtered.filter((v) => v.type === 'A')}
+                filter={(v) => v.name.toLowerCase().includes(filter.toLowerCase()) && v.type === 'A'}
             />
             <CollapsibleSimVarSection
                 title={<><big className="text-yellow-400">L</big> Vars</>}
-                simVars={filtered.filter((v) => v.type === 'L')}
+                filter={(v) => v.name.toLowerCase().includes(filter.toLowerCase()) && v.type === 'L'}
             />
         </Menu>
     );

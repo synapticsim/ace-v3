@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { createDispatchHook, createSelectorHook, ReactReduxContextValue } from 'react-redux';
-import { loadSimVarConfigMiddleware, simVarsReducer } from './simVarSlice';
+import { simVarsReducer, writeSimVarConfigMiddleware } from './simVarSlice';
 
 const projectReducer = combineReducers({
     simVars: simVarsReducer,
@@ -9,7 +9,7 @@ const projectReducer = combineReducers({
 
 export const projectStore = configureStore({
     reducer: projectReducer,
-    middleware: [loadSimVarConfigMiddleware],
+    middleware: [writeSimVarConfigMiddleware],
 });
 
 export type ProjectState = ReturnType<typeof projectStore.getState>;

@@ -10,6 +10,7 @@ use crate::server::ResourceRouter;
 mod discord;
 mod project;
 mod server;
+mod simvars;
 
 fn main() {
     tauri::Builder::default()
@@ -21,6 +22,8 @@ fn main() {
             project::create_project,
             project::load_project,
             project::unload_project,
+            simvars::load_simvars,
+            simvars::save_simvars,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

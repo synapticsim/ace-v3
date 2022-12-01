@@ -1,15 +1,16 @@
 import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
+import { invoke } from '@tauri-apps/api/tauri';
 
 type SimVarType = 'A' | 'E' | 'L';
 
 export function parseSimVarName(name: string): { type: SimVarType, name: string, index: number, key: string } | undefined {
     const match = name.match(/^(?:(?<type>[AEL]):)?(?<name>[^:]+)(?::(?<index>\d))?$/i);
     if (match) {
-        const groups = match.groups as { type?: SimVarType, name?: string, index?: number };
+        const groups = match.groups as { type?: SimVarType, name?: string, index?: string };
         return {
             type: groups.type ?? 'A',
             name: groups.name ?? '',
-            index: groups.index ?? 0,
+            index: groups.index ? parseInt(groups.index) : 0,
             key: `${groups.type ?? 'A'}:${groups.name ?? ''}:${groups.index ?? 0}`,
         };
     }
@@ -18,7 +19,6 @@ export function parseSimVarName(name: string): { type: SimVarType, name: string,
 
 export interface SimVar {
     type: SimVarType;
-    key: string;
     name: string;
     index: number;
     unit: string;
@@ -26,41 +26,50 @@ export interface SimVar {
     pinned?: boolean;
 }
 
+export interface SimVarMap {
+    [key: string]: SimVar;
+}
+
 const simVarSlice = createSlice({
     name: 'simVars',
     initialState: {} as { [key: string]: SimVar },
     reducers: {
-        setSimVar(state, action: PayloadAction<{ name: string, unit: string, value: string | number }>) {
-            const { name, unit, value } = action.payload;
+        setSimVar(state, action: PayloadAction<{ key: string, unit: string, value: string | number }>) {
+            const { key, unit, value } = action.payload;
 
-            const parsedName = parseSimVarName(name);
-
-            if (parsedName) {
-                if (parsedName.key in state) {
-                    state[parsedName.key].unit = unit;
-                    state[parsedName.key].value = value;
-                } else {
-                    state[parsedName.key] = { ...parsedName, unit, value };
+            if (key in state) {
+                state[key].unit = unit;
+                state[key].value = value;
+            } else {
+                const parsedName = parseSimVarName(key);
+                if (parsedName) {
+                    state[key] = { ...parsedName, unit, value };
                 }
             }
         },
-        togglePin(state, action: PayloadAction<string>) {
-            const parsedName = parseSimVarName(action.payload);
+        initializeSimVars(state, action: PayloadAction<{ simVars: SimVarMap }>) {
+            for (const [key, value] of Object.entries(action.payload.simVars)) {
+                state[key] = value;
+            }
+        },
+        togglePin(state, action: PayloadAction<{ key: string }>) {
+            const { key } = action.payload;
 
-            if (parsedName) {
-                if (parsedName.key in state) {
-                    state[parsedName.key].pinned = !state[parsedName.key].pinned;
-                }
+            if (key in state) {
+                state[key].pinned = !state[key].pinned;
             }
         },
     },
 });
 
-export const { setSimVar, togglePin } = simVarSlice.actions;
+export const { setSimVar, initializeSimVars, togglePin } = simVarSlice.actions;
 export const simVarsReducer = simVarSlice.reducer;
-export type SimVarState = ReturnType<typeof simVarSlice.reducer>;
 
-export const loadSimVarConfigMiddleware: Middleware = (store) => (next) => {
-    // TODO: Load simVar file from config
-    return (action) => next(action);
+export const writeSimVarConfigMiddleware: Middleware = (store) => (next) => (action) => {
+    next(action);
+
+    // Ensure we don't write the initial, empty state to the filesystem
+    if (Object.keys(store.getState().simVars).length > 0) {
+        invoke('save_simvars', { simvars: store.getState().simVars }).catch(console.error);
+    }
 };

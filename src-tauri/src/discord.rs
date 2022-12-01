@@ -1,5 +1,6 @@
 use discord_rich_presence::activity::{Activity, Timestamps};
 use discord_rich_presence::{DiscordIpc, DiscordIpcClient};
+use std::ops::DerefMut;
 use std::sync::RwLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -19,24 +20,26 @@ impl DiscordClient {
     }
 
     pub fn set_idle(&self) {
-        match &mut *self.0.write().unwrap() {
+        match self.0.write().unwrap().deref_mut() {
             Some(ipc) => ipc.set_activity(Activity::new().state("Idling")).unwrap(),
             None => (),
         }
     }
 
     pub fn set_project(&self, project: &str) {
-        match &mut *self.0.write().unwrap() {
+        match self.0.write().unwrap().deref_mut() {
             Some(ipc) => ipc
                 .set_activity(
-                    Activity::new().state(&format!("Working on {}", project)).timestamps(
-                        Timestamps::new().start(
-                            SystemTime::now()
-                                .duration_since(UNIX_EPOCH)
-                                .unwrap()
-                                .as_secs() as i64,
+                    Activity::new()
+                        .state(&format!("Working on {}", project))
+                        .timestamps(
+                            Timestamps::new().start(
+                                SystemTime::now()
+                                    .duration_since(UNIX_EPOCH)
+                                    .unwrap()
+                                    .as_secs() as i64,
+                            ),
                         ),
-                    ),
                 )
                 .unwrap(),
             None => (),

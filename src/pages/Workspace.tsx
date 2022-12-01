@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { TransformComponent, TransformWrapper } from '@pronestor/react-zoom-pan-pinch';
+import { invoke } from '@tauri-apps/api/tauri';
 import { projectStore, ProjectStoreContext } from '../redux';
 import { Instrument } from '../components/Instrument';
 import { SimVarsMenu } from '../components/menu/SimVarsMenu';
+import { initializeSimVars, SimVarMap } from '../redux/simVarSlice';
 
 enum MenuTabs {
     SimVars,
@@ -11,6 +13,15 @@ enum MenuTabs {
 
 export const Workspace: React.FC = () => {
     const [currentMenuTab, setMenuTab] = useState<MenuTabs | undefined>(undefined);
+
+    useEffect(() => {
+        invoke<SimVarMap>('load_simvars')
+            .then((simVars) => {
+                projectStore.dispatch(initializeSimVars({ simVars }));
+                console.log('[redux::simVarSlice] Loaded SimVars from project directory');
+            })
+            .catch(console.error);
+    }, []);
 
     return (
         <Provider store={projectStore} context={ProjectStoreContext}>

@@ -53,7 +53,7 @@ pub fn create_project(
         .unwrap()
         .to_path_buf();
 
-    let data = serde_json::to_string(&project).map_err(|e| e.to_string())?;
+    let data = serde_json::to_string_pretty(&project).map_err(|e| e.to_string())?;
     fs::create_dir_all(config_file.parent().unwrap()).map_err(|e| e.to_string())?;
     fs::write(config_file, data).map_err(|e| e.to_string())?;
 
