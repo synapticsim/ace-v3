@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { FiChevronLeft, FiChevronRight, FiSliders } from 'react-icons/fi';
 import { RiPushpin2Line } from 'react-icons/ri';
 import classNames from 'classnames';
@@ -13,11 +13,17 @@ interface SimVarSliderProps {
     name: string;
 }
 
-const SimVarSlider: React.FC<SimVarSliderProps> = ({ name }) => {
+const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ name }) => {
     const simVar = useProjectSelector((state: ProjectState) => state.simVars[name]);
     const dispatch = useProjectDispatch();
 
     const [collapsed, setCollapsed] = useState<boolean>(true);
+
+    const onChange = useCallback((value: number | number[]) => dispatch(setSimVar({
+        key: formatKey(simVar),
+        unit: simVar.unit,
+        value: value as number,
+    })), [dispatch, simVar]);
 
     return (
         <div>
@@ -53,17 +59,13 @@ const SimVarSlider: React.FC<SimVarSliderProps> = ({ name }) => {
                         min={0}
                         max={100}
                         value={simVar.value as number}
-                        onChange={(value) => dispatch(setSimVar({
-                            key: formatKey(simVar),
-                            unit: simVar.unit,
-                            value: value as number,
-                        }))}
+                        onChange={onChange}
                     />
                 </div>
             </div>
         </div>
     );
-};
+});
 
 interface SimVarSectionProps {
     filter: (v: SimVar) => boolean;

@@ -68,7 +68,9 @@ export const Instrument: React.FC<InstrumentProps> = ({ name, x, y, width, heigh
         iframeRef.current?.contentWindow?.removeEventListener('keydown', handleKeyDown);
     }, [iframeRef, handleKeyDown]);
 
-    useEffect(() => setupInstrument(), [iframeRef, setupInstrument]);
+    useEffect(() => {
+        setTimeout(() => setupInstrument(), 10);
+    }, [iframeRef, setupInstrument]);
 
     if (baseURL === undefined) return null;
 
