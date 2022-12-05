@@ -75,3 +75,20 @@ export const SliderInput: React.FC<SliderProps> = ({ ...props }) => {
         />
     );
 };
+
+export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => (
+    <div className="relative w-10 h-5">
+        <input
+            type="checkbox"
+            className={classNames('opacity-0 w-full h-full cursor-pointer peer', className)}
+            {...props}
+        />
+        <div className="absolute top-0 left-0 w-full h-full rounded-full bg-midnight-700 pointer-events-none" />
+        <div
+            className={classNames(
+                'absolute top-1 left-1 w-3 h-3 rounded-full bg-midnight-600 duration-100 pointer-events-none',
+                'peer-checked:bg-yellow-400 peer-checked:left-6',
+            )}
+        />
+    </div>
+);

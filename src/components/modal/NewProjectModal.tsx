@@ -4,14 +4,18 @@ import { Field, Form, Formik } from 'formik';
 import { invoke } from '@tauri-apps/api/tauri';
 import { Modal, ModalProps } from './index';
 import { FileInput, Input } from '../Input';
-import { ProjectConfig } from '../../types';
-import { newProjectSchema } from '../../utils/schema';
 import { Button } from '../Button';
+import { setActive } from '../../redux/global/projectSlice';
+import { useGlobalDispatch } from '../../redux/global';
+import { newProjectSchema } from '../../utils/schema';
+import { ProjectConfig } from '../../types';
 
 type NewProjectModalProps = Omit<ModalProps, 'title'>;
 
 export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }) => {
     const navigate = useNavigate();
+
+    const dispatch = useGlobalDispatch();
 
     return (
         <Modal title="New Project" show={show} onExit={onExit}>
@@ -26,17 +30,16 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
                     },
                 }}
                 validationSchema={newProjectSchema}
-                onSubmit={(values, { setSubmitting }) => {
+                onSubmit={(values) => {
                     const { root: path, ...project } = values;
                     invoke<ProjectConfig>('create_project', { path, project })
                         .then((project) => {
-                            // TODO: Set project in redux
+                            dispatch(setActive({ project }));
                             navigate('/project');
-                        })
-                        .finally(() => setSubmitting(false));
+                        });
                 }}
             >
-                {({ values, errors, isSubmitting, setFieldValue, submitCount }) => (
+                {({ values, errors, setFieldValue, submitCount }) => (
                     <Form className="flex flex-col gap-4 w-96">
                         <Field
                             as={Input}

@@ -1,5 +1,5 @@
-import { projectStore } from '../redux';
-import { parseSimVarName, setSimVar } from '../redux/simVarSlice';
+import { workspaceStore } from '../redux/workspace';
+import { parseSimVarName, setSimVar } from '../redux/workspace/simVarSlice';
 
 export namespace SimVar {
     export function GetSimVarValue(name: string, unit: string): any {
@@ -7,13 +7,13 @@ export namespace SimVar {
         const defaultValue = unit === 'string' ? '' : 0;
 
         if (parsedName) {
-            const state = projectStore.getState();
+            const state = workspaceStore.getState();
 
             if (parsedName.key in state.simVars) {
                 return state.simVars[parsedName.key].value;
             }
 
-            projectStore.dispatch(setSimVar({
+            workspaceStore.dispatch(setSimVar({
                 key: parsedName.key,
                 unit,
                 value: defaultValue,
@@ -27,7 +27,7 @@ export namespace SimVar {
         const parsedName = parseSimVarName(name);
 
         if (parsedName) {
-            projectStore.dispatch(setSimVar({
+            workspaceStore.dispatch(setSimVar({
                 key: parsedName.key,
                 unit,
                 value,

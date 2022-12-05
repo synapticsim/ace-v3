@@ -15,7 +15,7 @@ enum SimVarType {
 
 enum SimVarValue {
     String(String),
-    Number(i64),
+    Number(f64),
 }
 
 impl<'de> Deserialize<'de> for SimVarValue {
@@ -32,18 +32,32 @@ impl<'de> Deserialize<'de> for SimVarValue {
                 f.write_str("value as a number or string")
             }
 
+            fn visit_f64<E>(self, num: f64) -> Result<Self::Value, E>
+                where
+                    E: de::Error,
+            {
+                Ok(SimVarValue::Number(num))
+            }
+
+            fn visit_f32<E>(self, num: f32) -> Result<Self::Value, E>
+                where
+                    E: de::Error,
+            {
+                Ok(SimVarValue::Number(num as f64))
+            }
+
             fn visit_i64<E>(self, num: i64) -> Result<Self::Value, E>
             where
                 E: de::Error,
             {
-                Ok(SimVarValue::Number(num))
+                Ok(SimVarValue::Number(num as f64))
             }
 
             fn visit_u64<E>(self, num: u64) -> Result<Self::Value, E>
             where
                 E: de::Error,
             {
-                Ok(SimVarValue::Number(num as i64))
+                Ok(SimVarValue::Number(num as f64))
             }
 
             fn visit_str<E>(self, str: &str) -> Result<Self::Value, E>
@@ -65,7 +79,7 @@ impl Serialize for SimVarValue {
     {
         match self {
             SimVarValue::String(str) => serializer.serialize_str(str),
-            SimVarValue::Number(num) => serializer.serialize_i64(*num),
+            SimVarValue::Number(num) => serializer.serialize_f64(*num),
         }
     }
 }

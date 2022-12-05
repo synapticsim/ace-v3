@@ -1,7 +1,6 @@
 import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 import { invoke } from '@tauri-apps/api/tauri';
-
-type SimVarType = 'A' | 'E' | 'L';
+import { SimVarMap, SimVarType } from '../../types';
 
 export function parseSimVarName(name: string): { type: SimVarType, name: string, index: number, key: string } | undefined {
     const match = name.match(/^(?:(?<type>[AEL]):)?(?<name>[^:]+)(?::(?<index>\d))?$/i);
@@ -17,22 +16,9 @@ export function parseSimVarName(name: string): { type: SimVarType, name: string,
     return undefined;
 }
 
-export interface SimVar {
-    type: SimVarType;
-    name: string;
-    index: number;
-    unit: string;
-    value: string | number;
-    pinned?: boolean;
-}
-
-export interface SimVarMap {
-    [key: string]: SimVar;
-}
-
 const simVarSlice = createSlice({
     name: 'simVars',
-    initialState: {} as { [key: string]: SimVar },
+    initialState: {} as SimVarMap,
     reducers: {
         setSimVar(state, action: PayloadAction<{ key: string, unit: string, value: string | number }>) {
             const { key, unit, value } = action.payload;

@@ -3,9 +3,10 @@ import { FiChevronLeft, FiChevronRight, FiSliders } from 'react-icons/fi';
 import { RiPushpin2Line } from 'react-icons/ri';
 import classNames from 'classnames';
 import { Input, SliderInput } from '../Input';
-import { ProjectState, useProjectDispatch, useProjectSelector } from '../../redux';
-import { setSimVar, SimVar, togglePin } from '../../redux/simVarSlice';
 import { Menu } from './index';
+import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../../redux/workspace';
+import { setSimVar, togglePin } from '../../redux/workspace/simVarSlice';
+import { SimVar } from '../../types';
 
 const formatKey = (v: SimVar): string => `${v.type}:${v.name}:${v.index}`;
 
@@ -14,8 +15,8 @@ interface SimVarSliderProps {
 }
 
 const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ name }) => {
-    const simVar = useProjectSelector((state: ProjectState) => state.simVars[name]);
-    const dispatch = useProjectDispatch();
+    const simVar = useWorkspaceSelector((state: WorkspaceState) => state.simVars[name]);
+    const dispatch = useWorkspaceDispatch();
 
     const [collapsed, setCollapsed] = useState<boolean>(true);
 
@@ -72,8 +73,8 @@ interface SimVarSectionProps {
 }
 
 const SimVarSection: React.FC<SimVarSectionProps> = ({ filter }) => {
-    const simVars = useProjectSelector(
-        (state: ProjectState) => Object.values(state.simVars).filter(filter),
+    const simVars = useWorkspaceSelector(
+        (state: WorkspaceState) => Object.values(state.simVars).filter(filter),
     );
 
     return (

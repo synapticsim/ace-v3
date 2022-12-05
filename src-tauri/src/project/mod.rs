@@ -4,6 +4,10 @@ use std::fs;
 use std::path::PathBuf;
 use std::sync::RwLock;
 use tauri::State;
+use uuid::Uuid;
+
+pub mod instruments;
+pub mod simvars;
 
 #[derive(Debug, Default)]
 pub struct CurrentProject(pub RwLock<Option<(PathBuf, Project)>>);
@@ -16,9 +20,26 @@ pub struct ProjectPaths {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+pub enum ElementType {
+    Instrument,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct Element {
+    #[serde(default = "Uuid::new_v4")]
+    pub uuid: Uuid,
+    pub name: String,
+    pub element: ElementType,
+    pub x: i32,
+    pub y: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Project {
     pub name: String,
     pub paths: ProjectPaths,
+    #[serde(default = "Vec::new")]
+    pub elements: Vec<Element>,
 }
 
 #[tauri::command]
