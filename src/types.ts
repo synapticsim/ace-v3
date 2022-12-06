@@ -1,9 +1,32 @@
+export type ElementType = 'Instrument';
+
+export interface Element {
+    uuid: string;
+    name: string;
+    element: ElementType;
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+}
+
 export interface ProjectConfig {
     name: string;
     paths: {
         instruments: string;
         bundles: string;
         html_ui: string;
+    };
+    elements: Element[];
+}
+
+export interface InstrumentConfig {
+    index: string;
+    isInteractive: boolean;
+    name: string;
+    dimensions: {
+        width: number;
+        height: number;
     };
 }
 

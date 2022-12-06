@@ -30,6 +30,8 @@ pub struct Element {
     pub uuid: Uuid,
     pub name: String,
     pub element: ElementType,
+    pub width: u32,
+    pub height: u32,
     pub x: i32,
     pub y: i32,
 }

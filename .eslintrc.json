@@ -4,6 +4,8 @@
         "@synaptic-simulations/eslint-config"
     ],
     "rules": {
-        "react/button-has-type": "off"
+        "react/button-has-type": "off",
+        "jsx-a11y/html-has-lang": "off",
+        "no-console": "off"
     }
 }

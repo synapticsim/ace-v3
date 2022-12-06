@@ -19,7 +19,7 @@ pub struct InstrumentConfig {
 }
 
 #[tauri::command]
-pub fn load_instruments(current_project: State<CurrentProject>) -> Result<Vec<String>, String> {
+pub fn load_instruments(current_project: State<CurrentProject>) -> Result<Vec<InstrumentConfig>, String> {
     let (project_root, project) = current_project
         .0
         .read()
@@ -27,7 +27,7 @@ pub fn load_instruments(current_project: State<CurrentProject>) -> Result<Vec<St
         .clone()
         .ok_or("No project currently loaded")?;
 
-    let instruments: Vec<String> = fs::read_dir(project_root.join(project.paths.instruments))
+    let instruments: Vec<InstrumentConfig> = fs::read_dir(project_root.join(project.paths.instruments))
         .unwrap()
         .filter_map(|dir| {
             let config_path = dir.as_ref().unwrap().path().join("config.json");
@@ -37,8 +37,8 @@ pub fn load_instruments(current_project: State<CurrentProject>) -> Result<Vec<St
             }
 
             let data = fs::read_to_string(&config_path).unwrap();
-            match serde_json::from_str::<InstrumentConfig>(data.as_str()) {
-                Ok(config) => Some(config.name),
+            match serde_json::from_str(data.as_str()) {
+                Ok(config) => Some(config),
                 Err(_) => None,
             }
         })

@@ -35,7 +35,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
                     invoke<ProjectConfig>('create_project', { path, project })
                         .then((project) => {
                             dispatch(setActive({ project }));
-                            navigate('/project');
+                            navigate('/workspace');
                         });
                 }}
             >
