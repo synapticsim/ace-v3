@@ -1,12 +1,12 @@
 import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
-import { FiRefreshCcw } from 'react-icons/fi';
 import { useTransformContext } from '@pronestor/react-zoom-pan-pinch';
 import { useDraggable } from '@dnd-kit/core';
 import { GlobalState, useGlobalSelector } from '../redux/global';
 import { installShims } from '../shims';
-import { ToggleInput } from './Input';
 import { Element } from '../types';
+import { HiRefresh } from 'react-icons/hi';
+import { useWorkspaceSelector, WorkspaceState } from '../redux/workspace'
 
 interface InstrumentFrameProps {
     name: string;
@@ -49,11 +49,11 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
+    const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.name);
+
     const updateInterval = useRef<number>();
 
     const { state: zoomState } = useTransformContext();
-
-    const projectName = useGlobalSelector((state: GlobalState) => state.project.active?.name);
 
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: uuid,
@@ -106,21 +106,23 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
                 height,
             }}
         >
-            <div
-                className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl"
-                ref={setNodeRef}
-                {...listeners}
-                {...attributes}
-            >
-                <div className="px-4 py-2 flex gap-4 items-center" data-no-dnd="true">
+            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl">
+                <div className="absolute -top-0.5 w-full flex justify-center">
+                    <span
+                        className="w-1/4 h-1.5 bg-midnight-700 rounded-b-full"
+                        ref={setNodeRef}
+                        {...listeners}
+                        {...attributes}
+                    />
+                </div>
+                <div className="px-4 py-2 flex gap-3 items-center">
                     <h4 className="font-medium">{name}</h4>
-                    <button onClick={refresh}>
-                        <FiRefreshCcw className="cursor-pointer active:stroke-yellow-400" size={22} />
+                    <button className="ml-auto" onClick={refresh}>
+                        <HiRefresh className="cursor-pointer active:text-midnight-500" size={22} />
                     </button>
-                    <ToggleInput onChange={(e) => console.log(e.target.checked)} />
                 </div>
             </div>
-            <div className="absolute w-full h-full box-content border-2 border-midnight-800 bg-black pointer-events-none">
+            <div className="absolute w-full h-full box-content border-2 border-midnight-700 bg-black pointer-events-none">
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>

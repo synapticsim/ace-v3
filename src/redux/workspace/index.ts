@@ -3,10 +3,12 @@ import { createDispatchHook, createSelectorHook, ReactReduxContextValue } from '
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { simVarsReducer, writeSimVarConfigMiddleware } from './simVarSlice';
 import { contextMenuReducer } from './contextMenuSlice';
+import { projectReducer } from './projectSlice';
 
 const workspaceReducer = combineReducers({
     simVars: simVarsReducer,
     contextMenu: contextMenuReducer,
+    project: projectReducer,
 });
 
 export const workspaceStore = configureStore({

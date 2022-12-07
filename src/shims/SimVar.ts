@@ -25,6 +25,7 @@ export namespace SimVar {
 
     export function SetSimVarValue(name: string, unit: string, value: string | number): any {
         const parsedName = parseSimVarName(name);
+        const defaultValue = unit === 'string' ? '' : 0;
 
         if (parsedName) {
             workspaceStore.dispatch(setSimVar({
@@ -32,8 +33,9 @@ export namespace SimVar {
                 unit,
                 value,
             }));
+            return value;
         }
 
-        return 0;
+        return defaultValue;
     }
 }

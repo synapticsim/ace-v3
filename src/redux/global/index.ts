@@ -2,11 +2,9 @@ import { createContext } from 'react';
 import { createDispatchHook, createSelectorHook, ReactReduxContextValue } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { configReducer, initializeConfigMiddleware } from './configSlice';
-import { projectReducer } from './projectSlice';
 
 const globalReducer = combineReducers({
     config: configReducer,
-    project: projectReducer,
 });
 
 export const globalStore = configureStore({

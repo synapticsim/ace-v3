@@ -5,8 +5,8 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { Modal, ModalProps } from './index';
 import { FileInput, Input } from '../Input';
 import { Button } from '../Button';
-import { setActive } from '../../redux/global/projectSlice';
-import { useGlobalDispatch } from '../../redux/global';
+import { useWorkspaceDispatch } from '../../redux/workspace'
+import { setActive } from '../../redux/workspace/projectSlice';
 import { newProjectSchema } from '../../utils/schema';
 import { ProjectConfig } from '../../types';
 
@@ -15,7 +15,7 @@ type NewProjectModalProps = Omit<ModalProps, 'title'>;
 export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }) => {
     const navigate = useNavigate();
 
-    const dispatch = useGlobalDispatch();
+    const workspaceDispatch = useWorkspaceDispatch();
 
     return (
         <Modal title="New Project" show={show} onExit={onExit}>
@@ -34,7 +34,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
                     const { root: path, ...project } = values;
                     invoke<ProjectConfig>('create_project', { path, project })
                         .then((project) => {
-                            dispatch(setActive({ project }));
+                            workspaceDispatch(setActive({ project }));
                             navigate('/workspace');
                         });
                 }}

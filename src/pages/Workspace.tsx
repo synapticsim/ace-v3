@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Provider } from 'react-redux';
 import { TransformComponent, TransformWrapper } from '@pronestor/react-zoom-pan-pinch';
 import { DndContext, DragEndEvent, useDndContext } from '@dnd-kit/core';
 import { invoke } from '@tauri-apps/api/tauri';
-import { GlobalState, globalStore, useGlobalSelector } from '../redux/global';
-import { setInstruments, updateElementPosition } from '../redux/global/projectSlice';
-import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState, workspaceStore, WorkspaceStoreContext } from '../redux/workspace';
+import { globalStore, useGlobalDispatch } from '../redux/global';
+import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
 import { setMenu } from '../redux/workspace/contextMenuSlice';
 import { initializeSimVars } from '../redux/workspace/simVarSlice';
+import { setInstruments, updateElementPosition } from '../redux/workspace/projectSlice';
 import { Instrument } from '../components/Instrument';
 import { SimVarsMenu } from '../components/menu/SimVarsMenu';
 import { CanvasMenu } from '../components/contextmenu/CanvasMenu';
@@ -20,7 +19,10 @@ enum MenuTabs {
 export const Workspace: React.FC = () => {
     const [currentMenuTab, setMenuTab] = useState<MenuTabs | undefined>(undefined);
 
-    const projectName = useGlobalSelector((state: GlobalState) => state.project.active?.name);
+    const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.name);
+    const workspaceDispatch = useWorkspaceDispatch();
+
+    const globalDispatch = useGlobalDispatch();
 
     const handleDragEnd = useCallback((e: DragEndEvent) => {
         const scale = e.active.data.current?.scale ?? 1;
@@ -34,38 +36,35 @@ export const Workspace: React.FC = () => {
     useEffect(() => {
         invoke<SimVarMap>('load_simvars')
             .then((simVars) => {
-                workspaceStore.dispatch(initializeSimVars({ simVars }));
+                workspaceDispatch(initializeSimVars({ simVars }));
                 console.info(`[${projectName}] Loaded SimVars from project configuration`);
             });
         invoke<InstrumentConfig[]>('load_instruments')
             .then((instruments) => {
-                globalStore.dispatch(setInstruments({ instruments }));
+                globalDispatch(setInstruments({ instruments }));
                 console.info(`[${projectName}] Loaded available instruments`);
             });
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <Provider store={workspaceStore} context={WorkspaceStoreContext}>
-            <DndContext onDragEnd={handleDragEnd}>
-                <Canvas />
-                <ContextMenuLayer />
-                <div className="absolute left-0 top-0 h-screen bg-midnight-800 shadow-2xl p-4 flex flex-col gap-4 z-20">
-                    <SimVarsMenu
-                        show={currentMenuTab === MenuTabs.SimVars}
-                        onClick={() => setMenuTab(MenuTabs.SimVars)}
-                        onExit={() => setMenuTab(undefined)}
-                    />
-                </div>
-            </DndContext>
-        </Provider>
+        <DndContext onDragEnd={handleDragEnd}>
+            <CanvasLayer />
+            <ContextMenuLayer />
+            <div className="absolute left-0 top-0 h-screen bg-midnight-800 shadow-2xl p-4 flex flex-col gap-4 z-20">
+                <SimVarsMenu
+                    show={currentMenuTab === MenuTabs.SimVars}
+                    onClick={() => setMenuTab(MenuTabs.SimVars)}
+                    onExit={() => setMenuTab(undefined)}
+                />
+            </div>
+        </DndContext>
     );
 };
 
-const Canvas: React.FC = () => {
+const CanvasLayer: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const project = useGlobalSelector((state: GlobalState) => state.project.active);
-
+    const project = useWorkspaceSelector((state: WorkspaceState) => state.project.active);
     const dispatch = useWorkspaceDispatch();
 
     const dndContext = useDndContext();
@@ -82,7 +81,7 @@ const Canvas: React.FC = () => {
             <TransformComponent wrapperClass="w-screen h-screen overflow-hidden">
                 <div
                     ref={containerRef}
-                    className="w-[15000px] h-[5000px] bg-grid"
+                    className="w-[8000px] h-[5000px] bg-grid"
                     onClick={() => (document.activeElement as HTMLElement)?.blur()}
                     onContextMenu={(e) => {
                         e.preventDefault();

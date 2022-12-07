@@ -5,16 +5,16 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { FiFolder, FiFolderPlus } from 'react-icons/fi';
 import { NewProjectModal } from '../components/modal/NewProjectModal';
 import { Button } from '../components/Button';
-import { useGlobalDispatch } from '../redux/global';
+import { useWorkspaceDispatch } from '../redux/workspace';
+import { setActive } from '../redux/workspace/projectSlice';
 import { ProjectConfig } from '../types';
-import { setActive } from '../redux/global/projectSlice'
 
 export const Home: React.FC = () => {
     const navigate = useNavigate();
 
     const [showNewProjectModal, setShowNewProjectModal] = useState<boolean>(false);
 
-    const dispatch = useGlobalDispatch();
+    const workspaceDispatch = useWorkspaceDispatch();
 
     const loadProject = useCallback(async () => {
         const path = await open({
@@ -23,7 +23,7 @@ export const Home: React.FC = () => {
         });
         invoke<ProjectConfig>('load_project', { path })
             .then((project) => {
-                dispatch(setActive({ project }));
+                workspaceDispatch(setActive({ project }));
                 navigate('/workspace');
             })
             .catch((error) => console.error(error));
