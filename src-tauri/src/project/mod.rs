@@ -1,4 +1,4 @@
-use crate::DiscordClient;
+use crate::{DiscordClient, FileWatcher};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -76,12 +76,14 @@ pub fn create_project(
         .unwrap()
         .to_path_buf();
 
+    // Write configuration to .ace/project.json
     let data = serde_json::to_string_pretty(&project).map_err(|e| e.to_string())?;
     fs::create_dir_all(config_file.parent().unwrap()).map_err(|e| e.to_string())?;
     fs::write(config_file, data).map_err(|e| e.to_string())?;
 
+    // Add project to global state
     *current_project.0.write().unwrap() = Some((path, project.clone()));
-
+    // Update Discord rich presence
     discord.inner().set_project(&project.name);
 
     Ok(project)
@@ -98,11 +100,13 @@ pub fn load_project(
         return Err("Project not initialized in selected directory.".into());
     }
 
+    // Read configuration from .ace/project.json
     let data = fs::read_to_string(config_file).map_err(|e| e.to_string())?;
     let project: Project = serde_json::from_str(data.as_str()).map_err(|e| e.to_string())?;
 
+    // Add project to global state
     *current_project.0.write().unwrap() = Some((path, project.clone()));
-
+    // Update Discord rich presence
     discord.inner().set_project(&project.name);
 
     Ok(project)
@@ -112,9 +116,13 @@ pub fn load_project(
 pub fn unload_project(
     current_project: State<CurrentProject>,
     discord: State<DiscordClient>,
+    watchers: State<FileWatcher>,
 ) -> Result<(), String> {
+    // Clear project from global state
     *current_project.0.write().unwrap() = None;
-
+    // Release all file watchers
+    watchers.inner().0.write().unwrap().clear();
+    // Update Discord rich presence
     discord.inner().set_idle();
 
     Ok(())

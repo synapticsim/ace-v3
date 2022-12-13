@@ -1,10 +1,10 @@
 import React from 'react';
 import { FiPlus } from 'react-icons/fi';
 import { ContextMenu, ContextMenuProps } from './index';
-import { GlobalState, useGlobalSelector } from '../../redux/global';
+import { useWorkspaceSelector, WorkspaceState } from '../../redux/workspace'
 
 export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) => {
-    const instruments = useGlobalSelector((state: GlobalState) => state.project.instruments);
+    const instruments = useWorkspaceSelector((state: WorkspaceState) => state.project.instruments);
 
     return (
         <ContextMenu {...props}>

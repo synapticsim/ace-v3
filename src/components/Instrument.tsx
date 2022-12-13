@@ -1,12 +1,14 @@
 import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
+import { HiRefresh } from 'react-icons/hi';
 import { useTransformContext } from '@pronestor/react-zoom-pan-pinch';
 import { useDraggable } from '@dnd-kit/core';
 import { GlobalState, useGlobalSelector } from '../redux/global';
+import { useWorkspaceSelector, WorkspaceState } from '../redux/workspace'
 import { installShims } from '../shims';
 import { Element } from '../types';
-import { HiRefresh } from 'react-icons/hi';
-import { useWorkspaceSelector, WorkspaceState } from '../redux/workspace'
+import { ToggleInput } from './Input'
+import { invoke } from '@tauri-apps/api/tauri'
 
 interface InstrumentFrameProps {
     name: string;
@@ -60,6 +62,10 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
         data: { scale: zoomState.scale },
     });
 
+    const handleWatch = useCallback((event: React.MouseEvent<HTMLInputElement>) => {
+        invoke(event.currentTarget.checked ? 'watch' : 'unwatch', { instrument: name }).catch(console.error);
+    }, [name])
+
     const setupInstrument = useCallback(() => {
         clearInterval(updateInterval.current);
 
@@ -109,7 +115,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
             <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
                     <span
-                        className="w-1/4 h-1.5 bg-midnight-700 rounded-b-full"
+                        className="w-1/4 h-1.5 bg-midnight-700 rounded-b-full outline-0"
                         ref={setNodeRef}
                         {...listeners}
                         {...attributes}
@@ -120,6 +126,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
                     <button className="ml-auto" onClick={refresh}>
                         <HiRefresh className="cursor-pointer active:text-midnight-500" size={22} />
                     </button>
+                    <ToggleInput onClick={handleWatch} />
                 </div>
             </div>
             <div className="absolute w-full h-full box-content border-2 border-midnight-700 bg-black pointer-events-none">

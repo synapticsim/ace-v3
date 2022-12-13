@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TransformComponent, TransformWrapper } from '@pronestor/react-zoom-pan-pinch';
 import { DndContext, DragEndEvent, useDndContext } from '@dnd-kit/core';
 import { invoke } from '@tauri-apps/api/tauri';
-import { globalStore, useGlobalDispatch } from '../redux/global';
+import { useGlobalDispatch } from '../redux/global';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
 import { setMenu } from '../redux/workspace/contextMenuSlice';
 import { initializeSimVars } from '../redux/workspace/simVarSlice';
@@ -21,17 +21,16 @@ export const Workspace: React.FC = () => {
 
     const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.name);
     const workspaceDispatch = useWorkspaceDispatch();
-
     const globalDispatch = useGlobalDispatch();
 
     const handleDragEnd = useCallback((e: DragEndEvent) => {
         const scale = e.active.data.current?.scale ?? 1;
-        globalStore.dispatch(updateElementPosition({
+        workspaceDispatch(updateElementPosition({
             uuid: e.active.id.toString(),
             dx: e.delta.x / scale,
             dy: e.delta.y / scale,
         }));
-    }, []);
+    }, [workspaceDispatch]);
 
     useEffect(() => {
         invoke<SimVarMap>('load_simvars')
