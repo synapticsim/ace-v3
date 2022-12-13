@@ -43,19 +43,19 @@ pub fn watch(
         .watch(path.as_path(), RecursiveMode::Recursive)
         .unwrap();
 
-    thread::spawn(move || {
-        while let Ok(event) = rx.recv() {
-            println!("{event:?}");
-            window.emit("reload", "bruh").unwrap();
-        }
-    });
-
     watchers
         .inner()
         .0
         .write()
         .unwrap()
-        .insert(instrument, debouncer);
+        .insert(instrument.clone(), debouncer);
+
+    thread::spawn(move || {
+        while let Ok(event) = rx.recv() {
+            println!("{event:?}");
+            window.emit("reload", instrument.as_str()).unwrap();
+        }
+    });
 
     Ok(())
 }

@@ -2,13 +2,14 @@ import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, use
 import { renderToString } from 'react-dom/server';
 import { HiRefresh } from 'react-icons/hi';
 import { useTransformContext } from '@pronestor/react-zoom-pan-pinch';
+import { invoke } from '@tauri-apps/api/tauri';
+import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { useDraggable } from '@dnd-kit/core';
 import { GlobalState, useGlobalSelector } from '../redux/global';
-import { useWorkspaceSelector, WorkspaceState } from '../redux/workspace'
+import { useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
 import { installShims } from '../shims';
 import { Element } from '../types';
-import { ToggleInput } from './Input'
-import { invoke } from '@tauri-apps/api/tauri'
+import { ToggleInput } from './Input';
 
 interface InstrumentFrameProps {
     name: string;
@@ -55,16 +56,14 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
 
     const updateInterval = useRef<number>();
 
+    const reloadUnlisten = useRef<UnlistenFn>();
+
     const { state: zoomState } = useTransformContext();
 
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: uuid,
         data: { scale: zoomState.scale },
     });
-
-    const handleWatch = useCallback((event: React.MouseEvent<HTMLInputElement>) => {
-        invoke(event.currentTarget.checked ? 'watch' : 'unwatch', { instrument: name }).catch(console.error);
-    }, [name])
 
     const setupInstrument = useCallback(() => {
         clearInterval(updateInterval.current);
@@ -89,6 +88,20 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
         }
     }, [iframeRef, setupInstrument]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const handleWatch = useCallback(async (event: React.MouseEvent<HTMLInputElement>) => {
+        if (event.currentTarget.checked) {
+            invoke('watch', { instrument: name }).catch(console.error);
+            reloadUnlisten.current = await listen<string>('reload', (e) => {
+                if (e.payload === name) {
+                    refresh();
+                }
+            });
+        } else {
+            invoke('unwatch', { instrument: name }).catch(console.error);
+            reloadUnlisten.current?.();
+        }
+    }, [name, refresh]);
+
     useEffect(() => {
         if (iframeRef.current) {
             // If we attach the shims immediately, they get cleared during the mounting phase.
@@ -99,6 +112,9 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
             }, 10);
         }
     }, [iframeRef, setupInstrument]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Clean up reload event listener on unmount
+    useEffect(() => () => reloadUnlisten.current?.(), []);
 
     return (
         <div
