@@ -1,5 +1,5 @@
 import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
-import { InstrumentConfig, ProjectConfig } from '../../types';
+import { Element, InstrumentConfig, ProjectConfig } from '../../types';
 import { invoke } from '@tauri-apps/api/tauri'
 
 interface ProjectState {
@@ -17,6 +17,16 @@ const projectSlice = createSlice({
         setInstruments(state, action: PayloadAction<{ instruments: InstrumentConfig[] }>) {
             state.instruments = action.payload.instruments;
         },
+        addElement(state, action: PayloadAction<Element>) {
+            if (state.active) {
+                state.active.elements.push(action.payload);
+            }
+        },
+        removeElement(state, action: PayloadAction<{ uuid: string }>) {
+            if (state.active) {
+                state.active.elements = state.active.elements.filter((element) => element.uuid !== action.payload.uuid);
+            }
+        },
         updateElementPosition(state, action: PayloadAction<{ uuid: string, dx: number, dy: number }>) {
             if (state.active) {
                 const { uuid, dx, dy } = action.payload;
@@ -33,14 +43,18 @@ const projectSlice = createSlice({
     },
 });
 
-export const { setActive, setInstruments, updateElementPosition } = projectSlice.actions;
+export const { setActive, setInstruments, addElement, removeElement, updateElementPosition } = projectSlice.actions;
 export const projectReducer = projectSlice.reducer;
 
 export const updateElementsMiddleware: Middleware = (store) => (next) => (action) => {
     next(action);
 
     const newConfig = store.getState().project.active;
-    if (newConfig !== undefined && action.type === 'project/updateElementPosition') {
+    if (newConfig !== undefined && (
+        action.type === 'project/addElement'
+        || action.type === 'project/removeElement'
+        || action.type === 'project/updateElementPosition'
+    )) {
         invoke('update_project', { newConfig }).catch(console.error)
     }
 };

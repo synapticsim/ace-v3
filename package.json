@@ -23,6 +23,7 @@
     "react-icons": "^4.6.0",
     "react-redux": "^8.0.5",
     "react-router": "^6.4.3",
+    "uuid": "^9.0.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {
@@ -31,6 +32,7 @@
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
+    "@types/uuid": "^9.0.0",
     "@vitejs/plugin-react": "^2.0.0",
     "autoprefixer": "^10.4.13",
     "eslint": "^8.22.0",

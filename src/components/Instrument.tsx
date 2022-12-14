@@ -6,10 +6,12 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { useDraggable } from '@dnd-kit/core';
 import { GlobalState, useGlobalSelector } from '../redux/global';
-import { useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
+import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
 import { installShims } from '../shims';
 import { Element } from '../types';
 import { ToggleInput } from './Input';
+import { setMenu } from '../redux/workspace/contextMenuSlice'
+import { ElementMenu } from './contextmenu/ElementMenu'
 
 interface InstrumentFrameProps {
     name: string;
@@ -48,11 +50,12 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(({ name,
     );
 }));
 
-export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height }) => {
+export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width, height }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.name);
+    const dispatch = useWorkspaceDispatch();
 
     const updateInterval = useRef<number>();
 
@@ -102,6 +105,10 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
         }
     }, [name, refresh]);
 
+    const handleElementMenu = useCallback((e: React.MouseEvent) => {
+        dispatch(setMenu(<ElementMenu element={{ uuid, name, element, x, y, width, height }} x={e.clientX} y={e.clientY} />))
+    }, [dispatch]);
+
     useEffect(() => {
         if (iframeRef.current) {
             // If we attach the shims immediately, they get cleared during the mounting phase.
@@ -128,7 +135,10 @@ export const Instrument: React.FC<Element> = ({ uuid, name, x, y, width, height 
                 height,
             }}
         >
-            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl">
+            <div
+                className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl"
+                 onContextMenu={handleElementMenu}
+            >
                 <div className="absolute -top-0.5 w-full flex justify-center">
                     <span
                         className="w-1/4 h-1.5 bg-midnight-700 rounded-b-full outline-0"

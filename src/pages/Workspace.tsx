@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TransformComponent, TransformWrapper } from '@pronestor/react-zoom-pan-pinch';
 import { DndContext, DragEndEvent, useDndContext } from '@dnd-kit/core';
 import { invoke } from '@tauri-apps/api/tauri';
-import { useGlobalDispatch } from '../redux/global';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
 import { setMenu } from '../redux/workspace/contextMenuSlice';
 import { initializeSimVars } from '../redux/workspace/simVarSlice';
@@ -20,27 +19,26 @@ export const Workspace: React.FC = () => {
     const [currentMenuTab, setMenuTab] = useState<MenuTabs | undefined>(undefined);
 
     const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.name);
-    const workspaceDispatch = useWorkspaceDispatch();
-    const globalDispatch = useGlobalDispatch();
+    const dispatch = useWorkspaceDispatch();
 
     const handleDragEnd = useCallback((e: DragEndEvent) => {
         const scale = e.active.data.current?.scale ?? 1;
-        workspaceDispatch(updateElementPosition({
+        dispatch(updateElementPosition({
             uuid: e.active.id.toString(),
             dx: e.delta.x / scale,
             dy: e.delta.y / scale,
         }));
-    }, [workspaceDispatch]);
+    }, [dispatch]);
 
     useEffect(() => {
         invoke<SimVarMap>('load_simvars')
             .then((simVars) => {
-                workspaceDispatch(initializeSimVars({ simVars }));
+                dispatch(initializeSimVars({ simVars }));
                 console.info(`[${projectName}] Loaded SimVars from project configuration`);
             });
         invoke<InstrumentConfig[]>('load_instruments')
             .then((instruments) => {
-                globalDispatch(setInstruments({ instruments }));
+                dispatch(setInstruments({ instruments }));
                 console.info(`[${projectName}] Loaded available instruments`);
             });
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
