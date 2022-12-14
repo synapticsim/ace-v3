@@ -3,23 +3,30 @@ import { FiPlus } from 'react-icons/fi';
 import { v4 } from 'uuid';
 import { ContextMenu, ContextMenuProps } from './index';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../../redux/workspace'
-import { addElement } from '../../redux/workspace/projectSlice'
+import { addElement, clampElementPosition } from '../../redux/workspace/projectSlice'
 import { InstrumentConfig } from '../../types'
+import { useTransformContext } from '@pronestor/react-zoom-pan-pinch'
 
 export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) => {
     const instruments = useWorkspaceSelector((state: WorkspaceState) => state.project.instruments);
 
+    const { state: transformState } = useTransformContext();
+
     const dispatch = useWorkspaceDispatch();
 
     const addInstrument = useCallback((instrument: InstrumentConfig) => {
+        let [x, y] = clampElementPosition(
+            (props.x - transformState.positionX) / transformState.scale,
+            (props.y - transformState.positionY) / transformState.scale
+        );
         dispatch(addElement({
             name: instrument.name,
             uuid: v4(),
             element: 'Instrument',
             width: instrument.dimensions.width,
             height: instrument.dimensions.height,
-            x: 0,
-            y: 0,
+            x,
+            y,
         }))
     }, [dispatch]);
 

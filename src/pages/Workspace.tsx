@@ -46,7 +46,6 @@ export const Workspace: React.FC = () => {
     return (
         <DndContext onDragEnd={handleDragEnd}>
             <CanvasLayer />
-            <ContextMenuLayer />
             <div className="absolute left-0 top-0 h-screen bg-midnight-800 shadow-2xl p-4 flex flex-col gap-4 z-20">
                 <SimVarsMenu
                     show={currentMenuTab === MenuTabs.SimVars}
@@ -93,6 +92,7 @@ const CanvasLayer: React.FC = () => {
                     ))}
                 </div>
             </TransformComponent>
+            <ContextMenuLayer />
         </TransformWrapper>
     );
 };

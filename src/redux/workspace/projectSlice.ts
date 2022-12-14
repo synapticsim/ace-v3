@@ -2,6 +2,15 @@ import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 import { Element, InstrumentConfig, ProjectConfig } from '../../types';
 import { invoke } from '@tauri-apps/api/tauri'
 
+export function clampElementPosition(x: number, y: number): [number, number] {
+    let newX = Math.round(x / 20) * 20;
+    let newY = Math.round(y / 20) * 20;
+    newX = Math.max(0, Math.min(8000, newX));
+    newY = Math.max(0, Math.min(5000, newY));
+
+    return [newX, newY];
+}
+
 interface ProjectState {
     active?: ProjectConfig;
     instruments: InstrumentConfig[];
@@ -33,10 +42,9 @@ const projectSlice = createSlice({
                 const element = state.active.elements.find((i) => i.uuid === uuid);
 
                 if (element !== undefined) {
-                    const newX = Math.round((element.x + dx) / 20) * 20;
-                    const newY = Math.round((element.y + dy) / 20) * 20;
-                    element.x = Math.max(0, Math.min(8000, newX));
-                    element.y = Math.max(0, Math.min(5000, newY));
+                    const [newX, newY] = clampElementPosition(element.x + dx, element.y + dy);
+                    element.x = newX;
+                    element.y = newY;
                 }
             }
         },

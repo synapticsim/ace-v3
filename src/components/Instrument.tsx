@@ -61,11 +61,11 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
 
     const reloadUnlisten = useRef<UnlistenFn>();
 
-    const { state: zoomState } = useTransformContext();
+    const { state: transformState } = useTransformContext();
 
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: uuid,
-        data: { scale: zoomState.scale },
+        data: { scale: transformState.scale },
     });
 
     const setupInstrument = useCallback(() => {
@@ -127,21 +127,19 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
         <div
             ref={containerRef}
             className="absolute shadow-2xl"
+            onContextMenu={handleElementMenu}
             style={{
                 opacity: isDragging ? 0.5 : 1,
-                left: x + (transform?.x ?? 0) / zoomState.scale,
-                top: y + (transform?.y ?? 0) / zoomState.scale,
+                left: x + (transform?.x ?? 0) / transformState.scale,
+                top: y + (transform?.y ?? 0) / transformState.scale,
                 width,
                 height,
             }}
         >
-            <div
-                className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl"
-                 onContextMenu={handleElementMenu}
-            >
+            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
                     <span
-                        className="w-1/4 h-1.5 bg-midnight-700 rounded-b-full outline-0"
+                        className="w-1/4 h-2 bg-midnight-700 rounded-b-full outline-0"
                         ref={setNodeRef}
                         {...listeners}
                         {...attributes}
