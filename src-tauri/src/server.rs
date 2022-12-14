@@ -32,7 +32,7 @@ pub fn handle_ace_request(app: &AppHandle<Wry>, req: &Request) -> Result<Respons
 
     let router = resource_router.0.read().unwrap();
 
-    let (project_root, project) = current_project
+    let project = current_project
         .0
         .read()
         .unwrap()
@@ -43,11 +43,13 @@ pub fn handle_ace_request(app: &AppHandle<Wry>, req: &Request) -> Result<Respons
     let response = match router.at(path.as_str()) {
         Ok(matched) => {
             let file_path = match matched.value {
-                ResourceType::Bundle => project_root
-                    .join(project.paths.bundles.as_path())
+                ResourceType::Bundle => project
+                    .path
+                    .join(project.config.paths.bundles.as_path())
                     .join(matched.params.get("bundle").unwrap()),
-                ResourceType::External => project_root
-                    .join(project.paths.html_ui.as_path())
+                ResourceType::External => project
+                    .path
+                    .join(project.config.paths.html_ui.as_path())
                     .join(matched.params.get("path").unwrap()),
             };
             match fs::read(file_path) {

@@ -2,7 +2,6 @@ use crate::CurrentProject;
 use serde::de::Visitor;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::HashMap;
-use std::ops::Deref;
 use std::{fmt, fs};
 use tauri::State;
 
@@ -32,20 +31,6 @@ impl<'de> Deserialize<'de> for SimVarValue {
                 f.write_str("value as a number or string")
             }
 
-            fn visit_f64<E>(self, num: f64) -> Result<Self::Value, E>
-                where
-                    E: de::Error,
-            {
-                Ok(SimVarValue::Number(num))
-            }
-
-            fn visit_f32<E>(self, num: f32) -> Result<Self::Value, E>
-                where
-                    E: de::Error,
-            {
-                Ok(SimVarValue::Number(num as f64))
-            }
-
             fn visit_i64<E>(self, num: i64) -> Result<Self::Value, E>
             where
                 E: de::Error,
@@ -58,6 +43,20 @@ impl<'de> Deserialize<'de> for SimVarValue {
                 E: de::Error,
             {
                 Ok(SimVarValue::Number(num as f64))
+            }
+
+            fn visit_f32<E>(self, num: f32) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(SimVarValue::Number(num as f64))
+            }
+
+            fn visit_f64<E>(self, num: f64) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Ok(SimVarValue::Number(num))
             }
 
             fn visit_str<E>(self, str: &str) -> Result<Self::Value, E>
@@ -100,14 +99,15 @@ pub type SimVarConfig = HashMap<String, SimVar>;
 
 #[tauri::command]
 pub fn load_simvars(current_project: State<CurrentProject>) -> Result<SimVarConfig, String> {
-    let project = current_project.inner().0.read().unwrap();
-
-    let (path, _) = project
-        .deref()
+    let project = current_project
+        .inner()
+        .0
+        .read()
+        .unwrap()
         .clone()
         .ok_or("No project currently loaded")?;
 
-    let simvars: SimVarConfig = match fs::read_to_string(path.join(".ace/simvars.json")) {
+    let simvars: SimVarConfig = match fs::read_to_string(project.path.join(".ace/simvars.json")) {
         Ok(data) => serde_json::from_str(&data).map_err(|e| e.to_string())?,
         Err(_) => SimVarConfig::default(),
     };
@@ -120,16 +120,17 @@ pub fn save_simvars(
     simvars: SimVarConfig,
     current_project: State<CurrentProject>,
 ) -> Result<(), String> {
-    let project = current_project.inner().0.read().unwrap();
-
-    let (path, _) = project
-        .deref()
+    let project = current_project
+        .inner()
+        .0
+        .read()
+        .unwrap()
         .clone()
         .ok_or("No project currently loaded")?;
 
     let data = serde_json::to_string_pretty(&simvars).map_err(|e| e.to_string())?;
 
-    match fs::write(path.join(".ace/simvars.json"), data) {
+    match fs::write(project.path.join(".ace/simvars.json"), data) {
         Ok(_) => Ok(()),
         Err(e) => Err(e.to_string()),
     }

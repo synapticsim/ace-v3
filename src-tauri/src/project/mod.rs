@@ -1,8 +1,9 @@
 use crate::{DiscordClient, FileWatcher};
 use serde::{Deserialize, Serialize};
-use std::fs;
 use std::path::PathBuf;
 use std::sync::RwLock;
+use std::{fs, io};
+use std::ops::DerefMut;
 use tauri::State;
 use uuid::Uuid;
 
@@ -10,7 +11,7 @@ pub mod instruments;
 pub mod simvars;
 
 #[derive(Debug, Default)]
-pub struct CurrentProject(pub RwLock<Option<(PathBuf, Project)>>);
+pub struct CurrentProject(pub RwLock<Option<Project>>);
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ProjectPaths {
@@ -37,56 +38,102 @@ pub struct Element {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct Project {
+pub struct ProjectConfig {
     pub name: String,
     pub paths: ProjectPaths,
     #[serde(default = "Vec::new")]
     pub elements: Vec<Element>,
 }
 
+#[derive(Debug, Clone)]
+pub struct Project {
+    pub path: PathBuf,
+    pub config: ProjectConfig,
+}
+
+impl Project {
+    fn new(path: &PathBuf, config: &mut ProjectConfig) -> Self {
+        // Convert absolute paths to relative
+        if config.paths.instruments.starts_with(&path) {
+            config.paths.instruments = config
+                .paths
+                .instruments
+                .strip_prefix(&path)
+                .unwrap()
+                .to_path_buf();
+        }
+        if config.paths.bundles.starts_with(&path) {
+            config.paths.bundles = config
+                .paths
+                .bundles
+                .strip_prefix(&path)
+                .unwrap()
+                .to_path_buf();
+        }
+        if config.paths.html_ui.starts_with(&path) {
+            config.paths.html_ui = config
+                .paths
+                .html_ui
+                .strip_prefix(&path)
+                .unwrap()
+                .to_path_buf();
+        }
+
+        Project {
+            path: path.clone(),
+            config: config.clone(),
+        }
+    }
+
+    fn write(&self) -> io::Result<()> {
+        let config_file = self.path.join(".ace/project.json");
+        fs::create_dir_all(config_file.parent().unwrap())?;
+
+        let data = serde_json::to_string_pretty(&self.config).unwrap();
+        fs::write(config_file, data)?;
+
+        Ok(())
+    }
+}
+
 #[tauri::command]
 pub fn create_project(
     path: PathBuf,
-    mut project: Project,
+    mut config: ProjectConfig,
     current_project: State<CurrentProject>,
     discord: State<DiscordClient>,
-) -> Result<Project, String> {
-    let config_file = path.clone().join(".ace/project.json");
-    if config_file.exists() {
+) -> Result<ProjectConfig, String> {
+    if path.join(".ace/project.json").exists() {
         return Err("Project already exists in selected directory.".into());
     }
 
-    // Convert absolute paths to relative
-    project.paths.instruments = project
-        .paths
-        .instruments
-        .strip_prefix(&path)
-        .unwrap()
-        .to_path_buf();
-    project.paths.bundles = project
-        .paths
-        .bundles
-        .strip_prefix(&path)
-        .unwrap()
-        .to_path_buf();
-    project.paths.html_ui = project
-        .paths
-        .html_ui
-        .strip_prefix(&path)
-        .unwrap()
-        .to_path_buf();
-
-    // Write configuration to .ace/project.json
-    let data = serde_json::to_string_pretty(&project).map_err(|e| e.to_string())?;
-    fs::create_dir_all(config_file.parent().unwrap()).map_err(|e| e.to_string())?;
-    fs::write(config_file, data).map_err(|e| e.to_string())?;
+    let project = Project::new(&path, &mut config);
+    project.write().map_err(|e| e.to_string())?;
 
     // Add project to global state
-    *current_project.0.write().unwrap() = Some((path, project.clone()));
+    *current_project.0.write().unwrap() = Some(project);
     // Update Discord rich presence
-    discord.inner().set_project(&project.name);
+    discord.inner().set_project(&config.name);
 
-    Ok(project)
+    Ok(config)
+}
+
+#[tauri::command]
+pub fn update_project(
+    mut new_config: ProjectConfig,
+    current_project: State<CurrentProject>,
+) -> Result<(), String> {
+    match current_project.inner().0.write().unwrap().deref_mut() {
+        Some(project) => {
+            let new_project = Project::new(&project.path, &mut new_config);
+            new_project.write().map_err(|e| e.to_string())?;
+
+            *project = new_project;
+
+            Ok(())
+        },
+        None => Err("No project currently loaded".into()),
+    }
 }
 
 #[tauri::command]
@@ -94,7 +141,7 @@ pub fn load_project(
     path: PathBuf,
     current_project: State<CurrentProject>,
     discord: State<DiscordClient>,
-) -> Result<Project, String> {
+) -> Result<ProjectConfig, String> {
     let config_file = path.clone().join(".ace/project.json");
     if !config_file.exists() {
         return Err("Project not initialized in selected directory.".into());
@@ -102,14 +149,16 @@ pub fn load_project(
 
     // Read configuration from .ace/project.json
     let data = fs::read_to_string(config_file).map_err(|e| e.to_string())?;
-    let project: Project = serde_json::from_str(data.as_str()).map_err(|e| e.to_string())?;
+    let mut config = serde_json::from_str(data.as_str()).map_err(|e| e.to_string())?;
+
+    let project = Project::new(&path, &mut config);
 
     // Add project to global state
-    *current_project.0.write().unwrap() = Some((path, project.clone()));
+    *current_project.0.write().unwrap() = Some(project);
     // Update Discord rich presence
-    discord.inner().set_project(&project.name);
+    discord.inner().set_project(&config.name);
 
-    Ok(project)
+    Ok(config)
 }
 
 #[tauri::command]

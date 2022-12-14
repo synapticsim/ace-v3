@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 import { InstrumentConfig, ProjectConfig } from '../../types';
+import { invoke } from '@tauri-apps/api/tauri'
 
 interface ProjectState {
     active?: ProjectConfig;
@@ -22,8 +23,10 @@ const projectSlice = createSlice({
                 const element = state.active.elements.find((i) => i.uuid === uuid);
 
                 if (element !== undefined) {
-                    element.x = Math.round((element.x + dx) / 20) * 20;
-                    element.y = Math.round((element.y + dy) / 20) * 20;
+                    const newX = Math.round((element.x + dx) / 20) * 20;
+                    const newY = Math.round((element.y + dy) / 20) * 20;
+                    element.x = Math.max(0, Math.min(8000, newX));
+                    element.y = Math.max(0, Math.min(5000, newY));
                 }
             }
         },
@@ -32,3 +35,12 @@ const projectSlice = createSlice({
 
 export const { setActive, setInstruments, updateElementPosition } = projectSlice.actions;
 export const projectReducer = projectSlice.reducer;
+
+export const updateElementsMiddleware: Middleware = (store) => (next) => (action) => {
+    next(action);
+
+    const newConfig = store.getState().project.active;
+    if (newConfig !== undefined && action.type === 'project/updateElementPosition') {
+        invoke('update_project', { newConfig }).catch(console.error)
+    }
+};

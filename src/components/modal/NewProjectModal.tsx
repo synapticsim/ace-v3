@@ -31,8 +31,8 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
                 }}
                 validationSchema={newProjectSchema}
                 onSubmit={(values) => {
-                    const { root: path, ...project } = values;
-                    invoke<ProjectConfig>('create_project', { path, project })
+                    const { root: path, ...config } = values;
+                    invoke<ProjectConfig>('create_project', { path, config })
                         .then((project) => {
                             workspaceDispatch(setActive({ project }));
                             navigate('/workspace');

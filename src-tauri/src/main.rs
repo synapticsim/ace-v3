@@ -22,6 +22,7 @@ fn main() {
         .manage(DiscordClient::new())
         .invoke_handler(tauri::generate_handler![
             project::create_project,
+            project::update_project,
             project::load_project,
             project::unload_project,
             project::instruments::load_instruments,

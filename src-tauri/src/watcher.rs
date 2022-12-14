@@ -18,7 +18,7 @@ pub fn watch(
     current_project: State<CurrentProject>,
     watchers: State<FileWatcher>,
 ) -> Result<(), String> {
-    let (project_root, project) = current_project
+    let project = current_project
         .inner()
         .0
         .read()
@@ -26,11 +26,15 @@ pub fn watch(
         .clone()
         .ok_or("No project currently loaded")?;
 
-    let path = project_root.join(project.paths.bundles).join(&instrument);
-    if !path.exists() {
+    let instrument_path = project
+        .path
+        .join(project.config.paths.bundles)
+        .join(&instrument);
+
+    if !instrument_path.exists() {
         return Err(format!(
-            "Instrument directory \"{}\" could not be found.",
-            path.to_str().unwrap()
+            "Path \"{}\" could not be found.",
+            instrument_path.to_str().unwrap()
         )
         .into());
     }
@@ -40,7 +44,7 @@ pub fn watch(
     let mut debouncer = new_debouncer(Duration::from_millis(500), None, tx).unwrap();
     debouncer
         .watcher()
-        .watch(path.as_path(), RecursiveMode::Recursive)
+        .watch(instrument_path.as_path(), RecursiveMode::Recursive)
         .unwrap();
 
     watchers
@@ -52,7 +56,6 @@ pub fn watch(
 
     thread::spawn(move || {
         while let Ok(event) = rx.recv() {
-            println!("{event:?}");
             window.emit("reload", instrument.as_str()).unwrap();
         }
     });
