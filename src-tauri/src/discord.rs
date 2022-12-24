@@ -21,28 +21,37 @@ impl DiscordClient {
 
     pub fn set_idle(&self) {
         match self.0.write().unwrap().deref_mut() {
-            Some(ipc) => ipc.set_activity(Activity::new().state("Idling")).unwrap(),
-            None => (),
+            Some(ipc) => match ipc.set_activity(Activity::new().state("Idling")) {
+                Ok(_) => return,
+                Err(_) => (),
+            },
+            None => return,
         }
+
+        *self.0.write().unwrap() = None;
     }
 
     pub fn set_project(&self, project: &str) {
         match self.0.write().unwrap().deref_mut() {
-            Some(ipc) => ipc
-                .set_activity(
-                    Activity::new()
-                        .state(&format!("Working on {}", project))
-                        .timestamps(
-                            Timestamps::new().start(
-                                SystemTime::now()
-                                    .duration_since(UNIX_EPOCH)
-                                    .unwrap()
-                                    .as_secs() as i64,
-                            ),
-                        ),
-                )
-                .unwrap(),
-            None => (),
+            Some(ipc) => {
+                let status = format!("Working on {project}");
+                let activity = Activity::new().state(&status).timestamps(
+                    Timestamps::new().start(
+                        SystemTime::now()
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap()
+                            .as_secs() as i64,
+                    ),
+                );
+
+                match ipc.set_activity(activity) {
+                    Ok(_) => return,
+                    Err(_) => (),
+                };
+            }
+            None => return,
         }
+
+        *self.0.write().unwrap() = None;
     }
 }
