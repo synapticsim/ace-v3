@@ -3,10 +3,10 @@ export namespace Coherent {
         return null;
     }
     export function on(name: string, callback: (...data: any[]) => void): { clear: () => void } {
-        return null;
+        return { clear: () => null };
     }
 
     export function call(name: string, ...args: any[]): Promise<any> {
-        return null;
+        return Promise.resolve();
     }
 }
