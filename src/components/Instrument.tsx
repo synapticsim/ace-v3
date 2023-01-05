@@ -1,6 +1,7 @@
 import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import { HiRefresh } from 'react-icons/hi';
+import classNames from 'classnames';
 import { useTransformContext } from '@pronestor/react-zoom-pan-pinch';
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
@@ -58,6 +59,8 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
     const dispatch = useWorkspaceDispatch();
 
     const updateInterval = useRef<number>();
+
+    const interactable = useWorkspaceSelector((state: WorkspaceState) => [state.project.interactable]);
 
     const reloadUnlisten = useRef<UnlistenFn>();
 
@@ -153,7 +156,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                     <ToggleInput onClick={handleWatch} />
                 </div>
             </div>
-            <div className="absolute w-full h-full box-content border-2 border-midnight-700 bg-black pointer-events-none">
+            <div className={classNames('absolute w-full h-full box-content border-2 border-midnight-700 bg-black', { 'pointer-events-none': !interactable[0] })}>
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>

@@ -14,6 +14,7 @@ export function clampElementPosition(x: number, y: number): [number, number] {
 interface ProjectState {
     active?: ProjectConfig;
     instruments: InstrumentConfig[];
+    interactable?: boolean;
 }
 
 const projectSlice = createSlice({
@@ -25,6 +26,9 @@ const projectSlice = createSlice({
         },
         setInstruments(state, action: PayloadAction<{ instruments: InstrumentConfig[] }>) {
             state.instruments = action.payload.instruments;
+        },
+        setInteractable(state, action: PayloadAction<{ interactable: boolean }>) {
+            state.interactable = action.payload.interactable;
         },
         addElement(state, action: PayloadAction<Element>) {
             if (state.active) {
@@ -51,7 +55,7 @@ const projectSlice = createSlice({
     },
 });
 
-export const { setActive, setInstruments, addElement, removeElement, updateElementPosition } = projectSlice.actions;
+export const { setActive, setInstruments, setInteractable, addElement, removeElement, updateElementPosition } = projectSlice.actions;
 export const projectReducer = projectSlice.reducer;
 
 export const updateElementsMiddleware: Middleware = (store) => (next) => (action) => {
