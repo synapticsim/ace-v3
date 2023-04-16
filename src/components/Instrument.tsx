@@ -145,7 +145,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                         {...attributes}
                     />
                 </div>
-                <div className="px-4 py-2 flex gap-3 items-center">
+                <div className="px-4 py-1.5 flex gap-3 items-center">
                     <h4 className="font-medium">{name}</h4>
                     <button className="ml-auto" onClick={refresh}>
                         <HiRefresh className="cursor-pointer active:text-midnight-500" size={22} />
@@ -153,7 +153,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                     <ToggleInput onClick={handleWatch} />
                 </div>
             </div>
-            <div className="absolute w-full h-full box-content border-2 border-midnight-700 bg-black pointer-events-none">
+            <div className="absolute w-full h-full box-content border-2 border-midnight-700 bg-black">
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>

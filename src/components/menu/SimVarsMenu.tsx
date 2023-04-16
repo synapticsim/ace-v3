@@ -5,24 +5,24 @@ import classNames from 'classnames';
 import { Input, SliderInput } from '../Input';
 import { Menu } from './index';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../../redux/workspace';
-import { setSimVar, togglePin } from '../../redux/workspace/simVarSlice';
+import { formatKey, setSimVar, togglePin } from '../../redux/workspace/simVarSlice';
 import { SimVar } from '../../types';
 
-const formatKey = (v: SimVar): string => `${v.type}:${v.name}:${v.index}`;
-
 interface SimVarSliderProps {
-    name: string;
+    varKey: string;
 }
 
-const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ name }) => {
-    const simVar = useWorkspaceSelector((state: WorkspaceState) => state.simVars[name]);
+const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ varKey }) => {
+    const [id, simVar] = useWorkspaceSelector((state: WorkspaceState): [number, SimVar] => {
+        const id = state.simVars.ids[varKey];
+        return [id, state.simVars.vars[id]];
+    });
     const dispatch = useWorkspaceDispatch();
 
     const [collapsed, setCollapsed] = useState<boolean>(true);
 
     const onChange = useCallback((value: number | number[]) => dispatch(setSimVar({
-        key: formatKey(simVar),
-        unit: simVar.unit,
+        id,
         value: value as number,
     })), [dispatch, simVar]);
 
@@ -58,7 +58,7 @@ const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ name }) => {
                 <div className="py-3">
                     <SliderInput
                         min={0}
-                        max={100}
+                        max={250}
                         value={simVar.value as number}
                         onChange={onChange}
                     />
@@ -74,7 +74,7 @@ interface SimVarSectionProps {
 
 const SimVarSection: React.FC<SimVarSectionProps> = ({ filter }) => {
     const simVars = useWorkspaceSelector(
-        (state: WorkspaceState) => Object.values(state.simVars).filter(filter),
+        (state: WorkspaceState) => state.simVars.vars.filter(filter),
     );
 
     return (
@@ -84,7 +84,10 @@ const SimVarSection: React.FC<SimVarSectionProps> = ({ filter }) => {
                 'scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-midnight-700/25',
             )}
         >
-            {simVars.map((v) => <SimVarSlider key={formatKey(v)} name={formatKey(v)} />)}
+            {simVars.map((v) => {
+                const varKey = formatKey(v);
+                return <SimVarSlider key={varKey} varKey={varKey} />
+            })}
         </div>
     );
 };

@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { FiX } from 'react-icons/fi';
 import { AnimatePresence } from 'framer-motion';
 import classNames from 'classnames';
 
 interface MenuProps {
     title: string;
-    icon: React.ReactNode;
+    icon: ReactNode;
     show?: boolean;
     onClick?: () => void;
     onExit?: () => void;
-    children?: React.ReactNode[];
+    children?: ReactNode;
 }
 
 export const Menu: React.FC<MenuProps> = ({ title, icon, show, onClick, onExit, children }) => {

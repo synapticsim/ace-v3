@@ -1,6 +1,6 @@
 import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 import { invoke } from '@tauri-apps/api/tauri';
-import { SimVarMap, SimVarType } from '../../types';
+import { SimVar, SimVarType } from '../../types';
 
 export function parseSimVarName(name: string): { type: SimVarType, name: string, index: number, key: string } | undefined {
     const match = name.match(/^(?:(?<type>[AEL]):)?(?<name>[^:]+)(?::(?<index>\d))?$/i);
@@ -16,46 +16,61 @@ export function parseSimVarName(name: string): { type: SimVarType, name: string,
     return undefined;
 }
 
+export function formatKey(v: SimVar): string {
+    return `${v.type}:${v.name}:${v.index}`;
+}
+
 const simVarSlice = createSlice({
     name: 'simVars',
-    initialState: {} as SimVarMap,
+    initialState: {
+        ids: {} as { [key: string]: number },
+        vars: [] as SimVar[],
+    },
     reducers: {
-        setSimVar(state, action: PayloadAction<{ key: string, unit: string, value: string | number }>) {
-            const { key, unit, value } = action.payload;
+        newSimVar(state, action: PayloadAction<{ name: string, unit: string, value: string | number }>) {
+            const { name, unit, value } = action.payload;
 
-            if (key in state) {
-                state[key].unit = unit;
-                state[key].value = value;
-            } else {
-                const parsedName = parseSimVarName(key);
-                if (parsedName) {
-                    state[key] = { ...parsedName, unit, value };
-                }
+            const parsedName = parseSimVarName(name);
+            if (parsedName === undefined) {
+                throw new Error(`Invalid SimVar name: ${name}`);
+            }
+
+            if (!(parsedName.key in state.ids)) {
+                state.ids[parsedName.key] = state.vars.push({ ...parsedName, unit, value }) - 1;
             }
         },
-        initializeSimVars(state, action: PayloadAction<{ simVars: SimVarMap }>) {
-            for (const [key, value] of Object.entries(action.payload.simVars)) {
-                state[key] = value;
+        setSimVar(state, action: PayloadAction<{ id: number, value: string | number }>) {
+            const { id, value } = action.payload;
+
+            if (state.vars[id] === undefined) {
+                throw new Error(`Attempted to set non-existent SimVar with id ${id}`);
             }
+
+            state.vars[id].value = value;
         },
         togglePin(state, action: PayloadAction<{ key: string }>) {
             const { key } = action.payload;
 
-            if (key in state) {
-                state[key].pinned = !state[key].pinned;
+            if (key in state.ids) {
+                const id = state.ids[key];
+                state.vars[id].pinned = !state.vars[id].pinned;
             }
         },
     },
 });
 
-export const { setSimVar, initializeSimVars, togglePin } = simVarSlice.actions;
+export const {
+    newSimVar,
+    setSimVar,
+    togglePin,
+} = simVarSlice.actions;
 export const simVarsReducer = simVarSlice.reducer;
 
 export const writeSimVarConfigMiddleware: Middleware = (store) => (next) => (action) => {
     next(action);
 
     // Ensure we don't write the initial, empty state to the filesystem
-    if (Object.keys(store.getState().simVars).length > 0) {
-        invoke('save_simvars', { simvars: store.getState().simVars }).catch(console.error);
+    if (store.getState().simVars.vars.length > 0) {
+        invoke('save_simvars', { simvars: store.getState().simVars.vars }).catch(console.error);
     }
 };

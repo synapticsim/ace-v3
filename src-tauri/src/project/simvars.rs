@@ -1,7 +1,6 @@
 use crate::CurrentProject;
 use serde::de::Visitor;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
-use std::collections::HashMap;
 use std::{fmt, fs};
 use tauri::State;
 
@@ -95,7 +94,7 @@ pub struct SimVar {
     pinned: Option<bool>,
 }
 
-pub type SimVarConfig = HashMap<String, SimVar>;
+pub type SimVarConfig = Vec<SimVar>;
 
 #[tauri::command]
 pub fn load_simvars(current_project: State<CurrentProject>) -> Result<SimVarConfig, String> {

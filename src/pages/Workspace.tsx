@@ -4,15 +4,16 @@ import { DndContext, DragEndEvent, useDndContext } from '@dnd-kit/core';
 import { invoke } from '@tauri-apps/api/tauri';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
 import { setMenu } from '../redux/workspace/contextMenuSlice';
-import { initializeSimVars } from '../redux/workspace/simVarSlice';
+import { formatKey, newSimVar } from '../redux/workspace/simVarSlice';
 import { setInstruments, updateElementPosition } from '../redux/workspace/projectSlice';
 import { Instrument } from '../components/Instrument';
 import { SimVarsMenu } from '../components/menu/SimVarsMenu';
 import { CanvasMenu } from '../components/contextmenu/CanvasMenu';
-import { InstrumentConfig, SimVarMap } from '../types';
+import { InstrumentConfig, SimVar } from '../types';
 
 enum MenuTabs {
     SimVars,
+    Elements,
 }
 
 export const Workspace: React.FC = () => {
@@ -31,9 +32,15 @@ export const Workspace: React.FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        invoke<SimVarMap>('load_simvars')
+        invoke<SimVar[]>('load_simvars')
             .then((simVars) => {
-                dispatch(initializeSimVars({ simVars }));
+                for (const simVar of simVars) {
+                    dispatch(newSimVar({
+                        name: formatKey(simVar),
+                        unit: simVar.unit,
+                        value: simVar.value,
+                    }))
+                }
                 console.info(`[${projectName}] Loaded SimVars from project configuration`);
             });
         invoke<InstrumentConfig[]>('load_instruments')
@@ -69,8 +76,8 @@ const CanvasLayer: React.FC = () => {
         <TransformWrapper
             disabled={dndContext.active !== null}
             centerOnInit
-            minScale={0.25}
-            initialScale={0.25}
+            minScale={0.5}
+            initialScale={0.5}
             wheel={{ step: 0.15 }}
             velocityAnimation={{ equalToMove: false }}
         >

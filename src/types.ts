@@ -40,7 +40,3 @@ export interface SimVar {
     value: string | number;
     pinned?: boolean;
 }
-
-export interface SimVarMap {
-    [key: string]: SimVar;
-}
