@@ -39,13 +39,13 @@ const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ varKey }) => {
                     />
                     <h6 className="font-mono text-left">
                         {simVar.name}
-                        {simVar.index > 0 && <span className="text-yellow-400">:{simVar.index}</span>}
+                        {simVar.index > 0 && <span className="text-amethyst-400">:{simVar.index}</span>}
                     </h6>
                 </button>
                 <button className="mr-0.5" onClick={() => dispatch(togglePin({ key: formatKey(simVar) }))}>
                     <RiPushpin2Line
                         size={20}
-                        className={classNames({ 'text-yellow-400': simVar.pinned, 'text-midnight-700': !simVar.pinned })}
+                        className={classNames({ 'text-amethyst-400': simVar.pinned, 'text-silver-700': !simVar.pinned })}
                     />
                 </button>
             </div>
@@ -81,7 +81,7 @@ const SimVarSection: React.FC<SimVarSectionProps> = ({ filter }) => {
         <div
             className={classNames(
                 'px-6 py-5 max-h-80 flex flex-col gap-2 overflow-y-scroll',
-                'scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-midnight-700/25',
+                'scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-silver-700/25',
             )}
         >
             {simVars.map((v) => {
@@ -102,14 +102,14 @@ const CollapsibleSimVarSection: React.FC<CollapsibleSimVarSectionProps> = ({ tit
     return (
         <>
             <button
-                className="w-full px-6 py-3 bg-midnight-700/50 border-t-2 border-t-midnight-700 flex items-center justify-between shadow-sm"
+                className="w-full px-6 py-3 bg-silver-700/50 border-t-2 border-t-silver-700 flex items-center justify-between shadow-sm"
                 onClick={() => setCollapsed(!collapsed)}
             >
                 <h5>{title}</h5>
                 <FiChevronLeft
                     size={30}
                     className={classNames(
-                        'text-midnight-500 duration-200',
+                        'text-silver-500 duration-200',
                         { 'rotate-0': collapsed, '-rotate-90': !collapsed },
                     )}
                 />
@@ -146,11 +146,11 @@ export const SimVarsMenu: React.FC<SimVarsMenuProps> = ({ ...props }) => {
             </div>
             <SimVarSection filter={(v) => v.pinned ?? false} />
             <CollapsibleSimVarSection
-                title={<><big className="text-yellow-400">A</big> Vars</>}
+                title={<><big className="text-amethyst-400">A</big> Vars</>}
                 filter={(v) => v.name.toLowerCase().includes(filter.toLowerCase()) && v.type === 'A'}
             />
             <CollapsibleSimVarSection
-                title={<><big className="text-yellow-400">L</big> Vars</>}
+                title={<><big className="text-amethyst-400">L</big> Vars</>}
                 filter={(v) => v.name.toLowerCase().includes(filter.toLowerCase()) && v.type === 'L'}
             />
         </Menu>

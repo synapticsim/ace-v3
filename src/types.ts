@@ -10,7 +10,7 @@ export interface Element {
     y: number;
 }
 
-export interface ProjectConfig {
+export interface AceConfig {
     name: string;
     paths: {
         instruments: string;
@@ -18,6 +18,11 @@ export interface ProjectConfig {
         html_ui: string;
     };
     elements: Element[];
+}
+
+export interface AceProject {
+    path: string;
+    config: AceConfig;
 }
 
 export interface InstrumentConfig {

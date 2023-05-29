@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { TransformComponent, TransformWrapper } from '@pronestor/react-zoom-pan-pinch';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { DndContext, DragEndEvent, useDndContext } from '@dnd-kit/core';
 import { invoke } from '@tauri-apps/api/tauri';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
@@ -9,7 +9,9 @@ import { setInstruments, updateElementPosition } from '../redux/workspace/projec
 import { Instrument } from '../components/Instrument';
 import { SimVarsMenu } from '../components/menu/SimVarsMenu';
 import { CanvasMenu } from '../components/contextmenu/CanvasMenu';
+import { ElementsMenu } from '../components/menu/ElementsMenu';
 import { InstrumentConfig, SimVar } from '../types';
+import { appWindow } from '@tauri-apps/api/window';
 
 enum MenuTabs {
     SimVars,
@@ -19,7 +21,7 @@ enum MenuTabs {
 export const Workspace: React.FC = () => {
     const [currentMenuTab, setMenuTab] = useState<MenuTabs | undefined>(undefined);
 
-    const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.name);
+    const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.config.name);
     const dispatch = useWorkspaceDispatch();
 
     const handleDragEnd = useCallback((e: DragEndEvent) => {
@@ -32,6 +34,8 @@ export const Workspace: React.FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
+        appWindow.setResizable(true);
+        appWindow.maximize();
         invoke<SimVar[]>('load_simvars')
             .then((simVars) => {
                 for (const simVar of simVars) {
@@ -53,10 +57,15 @@ export const Workspace: React.FC = () => {
     return (
         <DndContext onDragEnd={handleDragEnd}>
             <CanvasLayer />
-            <div className="absolute left-0 top-0 h-screen bg-midnight-800 shadow-2xl p-4 flex flex-col gap-4 z-20">
+            <div className="absolute left-0 top-0 h-screen bg-silver-800 shadow-2xl p-4 flex flex-col gap-4 z-20">
                 <SimVarsMenu
                     show={currentMenuTab === MenuTabs.SimVars}
                     onClick={() => setMenuTab(MenuTabs.SimVars)}
+                    onExit={() => setMenuTab(undefined)}
+                />
+                <ElementsMenu
+                    show={currentMenuTab === MenuTabs.Elements}
+                    onClick={() => setMenuTab(MenuTabs.Elements)}
                     onExit={() => setMenuTab(undefined)}
                 />
             </div>
@@ -76,12 +85,12 @@ const CanvasLayer: React.FC = () => {
         <TransformWrapper
             disabled={dndContext.active !== null}
             centerOnInit
-            minScale={0.5}
+            minScale={0.25}
             initialScale={0.5}
             wheel={{ step: 0.15 }}
             velocityAnimation={{ equalToMove: false }}
         >
-            <TransformComponent wrapperClass="w-screen h-screen overflow-hidden">
+            <TransformComponent wrapperClass="!w-screen !h-screen overflow-hidden">
                 <div
                     ref={containerRef}
                     className="w-[8000px] h-[5000px] bg-grid"
@@ -94,7 +103,7 @@ const CanvasLayer: React.FC = () => {
                         }
                     }}
                 >
-                    {project?.elements?.map((props) => (
+                    {project?.config.elements?.map((props) => (
                         <Instrument {...props} />
                     ))}
                 </div>

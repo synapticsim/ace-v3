@@ -1,4 +1,4 @@
-use crate::CurrentProject;
+use crate::project::ActiveProject;
 use matchit::Router;
 use std::error::Error;
 use std::fs;
@@ -28,11 +28,11 @@ pub enum ResourceType {
 
 pub fn handle_ace_request(app: &AppHandle<Wry>, req: &Request) -> Result<Response, Box<dyn Error>> {
     let resource_router = app.state::<ResourceRouter>().inner();
-    let current_project = app.state::<CurrentProject>().inner();
+    let active_project = app.state::<ActiveProject>().inner();
 
     let router = resource_router.0.read().unwrap();
 
-    let project = current_project
+    let project = active_project
         .0
         .read()
         .unwrap()

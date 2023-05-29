@@ -1,6 +1,6 @@
+import { invoke } from '@tauri-apps/api/tauri';
 import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
-import { Element, InstrumentConfig, ProjectConfig } from '../../types';
-import { invoke } from '@tauri-apps/api/tauri'
+import { Element, InstrumentConfig, AceProject } from '../../types';
 
 export function clampElementPosition(x: number, y: number): [number, number] {
     let newX = Math.round(x / 20) * 20;
@@ -12,7 +12,7 @@ export function clampElementPosition(x: number, y: number): [number, number] {
 }
 
 interface ProjectState {
-    active?: ProjectConfig;
+    active?: AceProject;
     instruments: InstrumentConfig[];
 }
 
@@ -20,7 +20,7 @@ const projectSlice = createSlice({
     name: 'project',
     initialState: { instruments: [] } as ProjectState,
     reducers: {
-        setActive(state, action: PayloadAction<{ project: ProjectConfig }>) {
+        setActive(state, action: PayloadAction<{ project: AceProject }>) {
             state.active = action.payload.project;
         },
         setInstruments(state, action: PayloadAction<{ instruments: InstrumentConfig[] }>) {
@@ -28,18 +28,18 @@ const projectSlice = createSlice({
         },
         addElement(state, action: PayloadAction<Element>) {
             if (state.active) {
-                state.active.elements.push(action.payload);
+                state.active.config.elements.push(action.payload);
             }
         },
         removeElement(state, action: PayloadAction<{ uuid: string }>) {
             if (state.active) {
-                state.active.elements = state.active.elements.filter((element) => element.uuid !== action.payload.uuid);
+                state.active.config.elements = state.active.config.elements.filter((element) => element.uuid !== action.payload.uuid);
             }
         },
         updateElementPosition(state, action: PayloadAction<{ uuid: string, dx: number, dy: number }>) {
             if (state.active) {
                 const { uuid, dx, dy } = action.payload;
-                const element = state.active.elements.find((i) => i.uuid === uuid);
+                const element = state.active.config.elements.find((i) => i.uuid === uuid);
 
                 if (element !== undefined) {
                     const [newX, newY] = clampElementPosition(element.x + dx, element.y + dy);

@@ -1,4 +1,4 @@
-use crate::CurrentProject;
+use crate::project::ActiveProject;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use tauri::State;
@@ -20,10 +20,9 @@ pub struct InstrumentConfig {
 
 #[tauri::command]
 pub fn load_instruments(
-    current_project: State<CurrentProject>,
+    active_project: State<ActiveProject>,
 ) -> Result<Vec<InstrumentConfig>, String> {
-    let project = current_project
-        .inner()
+    let project = active_project
         .0
         .read()
         .unwrap()

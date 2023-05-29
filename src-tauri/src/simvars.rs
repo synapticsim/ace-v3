@@ -1,4 +1,4 @@
-use crate::CurrentProject;
+use crate::project::ActiveProject;
 use serde::de::Visitor;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::{fmt, fs};
@@ -97,9 +97,8 @@ pub struct SimVar {
 pub type SimVarConfig = Vec<SimVar>;
 
 #[tauri::command]
-pub fn load_simvars(current_project: State<CurrentProject>) -> Result<SimVarConfig, String> {
-    let project = current_project
-        .inner()
+pub fn load_simvars(active_project: State<ActiveProject>) -> Result<SimVarConfig, String> {
+    let project = active_project
         .0
         .read()
         .unwrap()
@@ -117,10 +116,9 @@ pub fn load_simvars(current_project: State<CurrentProject>) -> Result<SimVarConf
 #[tauri::command]
 pub fn save_simvars(
     simvars: SimVarConfig,
-    current_project: State<CurrentProject>,
+    active_project: State<ActiveProject>,
 ) -> Result<(), String> {
-    let project = current_project
-        .inner()
+    let project = active_project
         .0
         .read()
         .unwrap()

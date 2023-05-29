@@ -31,7 +31,7 @@ impl DiscordClient {
         *self.0.write().unwrap() = None;
     }
 
-    pub fn set_project(&self, project: &str) {
+    pub fn set_project(&self, project: &String) {
         match self.0.write().unwrap().deref_mut() {
             Some(ipc) => {
                 let status = format!("Working on {project}");

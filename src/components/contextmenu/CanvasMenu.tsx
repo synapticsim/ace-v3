@@ -5,12 +5,12 @@ import { ContextMenu, ContextMenuProps } from './index';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../../redux/workspace'
 import { addElement, clampElementPosition } from '../../redux/workspace/projectSlice'
 import { InstrumentConfig } from '../../types'
-import { useTransformContext } from '@pronestor/react-zoom-pan-pinch'
+import { useTransformContext } from 'react-zoom-pan-pinch'
 
 export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) => {
     const instruments = useWorkspaceSelector((state: WorkspaceState) => state.project.instruments);
 
-    const { state: transformState } = useTransformContext();
+    const { transformState } = useTransformContext();
 
     const dispatch = useWorkspaceDispatch();
 
@@ -32,7 +32,7 @@ export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) 
 
     return (
         <ContextMenu {...props}>
-            <div className="px-4 py-3 bg-midnight-700/50 border-b-2 border-b-midnight-700 font-medium">
+            <div className="px-4 py-3 bg-silver-700/50 border-b-2 border-b-silver-700 font-medium">
                 Instruments
             </div>
             {instruments.map((instrument) => (

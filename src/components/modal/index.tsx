@@ -44,7 +44,7 @@ export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) =
                     exit="hidden"
                 >
                     <motion.div
-                        className="relative max-w-1/2 mx-auto bg-midnight-800 rounded-2xl shadow-2xl"
+                        className="relative max-w-1/2 mx-auto bg-silver-800 rounded-2xl shadow-2xl"
                         variants={modalAnimation}
                         transition={{
                             duration: 0.2,
@@ -56,9 +56,9 @@ export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) =
                         animate="visible"
                         exit="hidden"
                     >
-                        <div className="px-8 py-5 bg-midnight-700 rounded-t-2xl flex justify-between items-center">
+                        <div className="px-8 py-5 bg-silver-700 rounded-t-2xl flex justify-between items-center">
                             <h3 className="font-medium">{title}</h3>
-                            <FiX size={30} className="text-midnight-400 cursor-pointer" onClick={onExit} />
+                            <FiX size={30} className="text-silver-400 cursor-pointer" onClick={onExit} />
                         </div>
                         <div className="p-8">
                             {children}

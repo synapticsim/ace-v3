@@ -1,4 +1,4 @@
-use crate::CurrentProject;
+use crate::project::ActiveProject;
 use notify::{RecommendedWatcher, RecursiveMode};
 use notify_debouncer_mini::{new_debouncer, Debouncer};
 use std::collections::HashMap;
@@ -15,11 +15,10 @@ pub struct FileWatcher(pub RwLock<HashMap<String, Debouncer<RecommendedWatcher>>
 pub fn watch(
     instrument: String,
     window: Window<Wry>,
-    current_project: State<CurrentProject>,
+    active_project: State<ActiveProject>,
     watchers: State<FileWatcher>,
 ) -> Result<(), String> {
-    let project = current_project
-        .inner()
+    let project = active_project
         .0
         .read()
         .unwrap()

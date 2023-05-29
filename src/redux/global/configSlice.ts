@@ -1,32 +1,69 @@
-import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit'
-import { platform } from '@tauri-apps/api/os'
+import { createAsyncThunk, createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
+import { Platform, platform as getPlatform } from '@tauri-apps/api/os';
+import { getVersion } from '@tauri-apps/api/app';
+import { AceProject } from '../../types';
+
+export interface RecentProject {
+    name: string;
+    path: string;
+    timestamp: string;
+}
 
 interface ConfigState {
-    baseUrl?: string;
+    platform?: Platform;
+    version?: string;
+    recentProjects?: RecentProject[];
 }
 
 const configSlice = createSlice({
     name: 'config',
     initialState: {} as ConfigState,
     reducers: {
-        setBaseUrl(state, action: PayloadAction<string>) {
-            state.baseUrl = action.payload;
+        pushRecentProject(state, action: PayloadAction<AceProject>) {
+            if (state.recentProjects === undefined) return;
+
+            const project = action.payload;
+            state.recentProjects = state.recentProjects.filter((recent) => recent.path !== project.path);
+            state.recentProjects.unshift({
+                name: project.config.name,
+                path: project.path,
+                timestamp: new Date().toISOString(),
+            });
         }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(initConfig.fulfilled, (state, action) => action.payload);
     }
 })
 
-export const { setBaseUrl } = configSlice.actions;
+export const { pushRecentProject } = configSlice.actions;
 export const configReducer = configSlice.reducer;
 
-export const initializeConfigMiddleware: Middleware = (store) => (next) => {
-    platform()
-        .then((platform) => {
-            if (platform === 'win32') {
-                store.dispatch(setBaseUrl('https://ace.localhost'));
-            } else {
-                store.dispatch(setBaseUrl('ace://localhost'));
-            }
-        });
+const LOCAL_STORAGE_KEY = 'ace_recent_projects';
 
-    return (action) => next(action);
+export const localStorageMiddleware: Middleware = (store) => (next) => (action) => {
+    next(action);
+
+    const recentProjects = store.getState().config.recentProjects;
+    if (recentProjects !== undefined) {
+        localStorage.setItem(
+            LOCAL_STORAGE_KEY,
+            JSON.stringify(recentProjects),
+        );
+    }
 }
+
+export const initConfig = createAsyncThunk(
+    'config/initialize',
+    async () => {
+        const platform = await getPlatform();
+        const version = await getVersion();
+
+        const local = localStorage.getItem(LOCAL_STORAGE_KEY);
+        const recentProjects = local === null
+            ? []
+            : JSON.parse(local) as RecentProject[];
+
+        return { platform, version, recentProjects }
+    },
+);

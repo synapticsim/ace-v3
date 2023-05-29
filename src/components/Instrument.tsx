@@ -1,7 +1,7 @@
-import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, useRef } from 'react';
+import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, useMemo, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import { HiRefresh } from 'react-icons/hi';
-import { useTransformContext } from '@pronestor/react-zoom-pan-pinch';
+import { useTransformContext } from 'react-zoom-pan-pinch';
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { useDraggable } from '@dnd-kit/core';
@@ -21,9 +21,11 @@ interface InstrumentFrameProps {
 }
 
 const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(({ name, width, height }, ref: ForwardedRef<HTMLIFrameElement>) => {
-    const baseUrl = useGlobalSelector((state: GlobalState) => state.config.baseUrl);
+    const platform = useGlobalSelector((state: GlobalState) => state.config.platform);
 
-    if (baseUrl === undefined) return null;
+    const baseUrl = useMemo(() => platform === 'win32' ? 'https://ace.localhost' : 'ace://localhost', [platform]);
+
+    if (platform === undefined) return null;
 
     return (
         <iframe
@@ -54,14 +56,14 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.name);
+    const projectName = useWorkspaceSelector((state: WorkspaceState) => state.project.active?.config.name);
     const dispatch = useWorkspaceDispatch();
 
     const updateInterval = useRef<number>();
 
     const reloadUnlisten = useRef<UnlistenFn>();
 
-    const { state: transformState } = useTransformContext();
+    const { transformState } = useTransformContext();
 
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: uuid,
@@ -136,10 +138,10 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 height,
             }}
         >
-            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-midnight-800 bg-midnight-800 rounded-t-xl">
+            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-silver-800 bg-silver-800 rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
                     <span
-                        className="w-1/4 h-2 bg-midnight-700 rounded-b-full outline-0"
+                        className="w-1/4 h-2 bg-silver-700 rounded-b-full outline-0"
                         ref={setNodeRef}
                         {...listeners}
                         {...attributes}
@@ -148,12 +150,12 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 <div className="px-4 py-1.5 flex gap-3 items-center">
                     <h4 className="font-medium">{name}</h4>
                     <button className="ml-auto" onClick={refresh}>
-                        <HiRefresh className="cursor-pointer active:text-midnight-500" size={22} />
+                        <HiRefresh className="cursor-pointer active:text-silver-500" size={22} />
                     </button>
                     <ToggleInput onClick={handleWatch} />
                 </div>
             </div>
-            <div className="absolute w-full h-full box-content border-2 border-midnight-700 bg-black">
+            <div className="absolute w-full h-full box-content border-2 border-silver-700 bg-black">
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>

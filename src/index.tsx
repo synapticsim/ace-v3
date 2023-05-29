@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { globalStore, GlobalStoreContext } from './redux/global';
-import { workspaceStore, WorkspaceStoreContext } from './redux/workspace'
+import { workspaceStore, WorkspaceStoreContext } from './redux/workspace';
 import { Home } from './pages/Home';
 import { Workspace } from './pages/Workspace';
+import "@fontsource-variable/jetbrains-mono";
+import "@fontsource-variable/space-grotesk";
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

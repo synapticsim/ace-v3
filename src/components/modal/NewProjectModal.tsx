@@ -8,7 +8,7 @@ import { Button } from '../Button';
 import { useWorkspaceDispatch } from '../../redux/workspace'
 import { setActive } from '../../redux/workspace/projectSlice';
 import { newProjectSchema } from '../../utils/schema';
-import { ProjectConfig } from '../../types';
+import { AceProject } from '../../types';
 
 type NewProjectModalProps = Omit<ModalProps, 'title'>;
 
@@ -32,7 +32,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
                 validationSchema={newProjectSchema}
                 onSubmit={(values) => {
                     const { root: path, ...config } = values;
-                    invoke<ProjectConfig>('create_project', { path, config })
+                    invoke<AceProject>('create_project', { path, config })
                         .then((project) => {
                             workspaceDispatch(setActive({ project }));
                             navigate('/workspace');

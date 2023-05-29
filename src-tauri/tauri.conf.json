@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "ace",
-    "version": "0.0.0"
+    "version": "3.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -54,11 +54,11 @@
     },
     "windows": [
       {
+        "title": "Advanced Cockpit Editor",
         "fullscreen": false,
         "height": 600,
-        "resizable": true,
-        "title": "ace",
-        "width": 800
+        "width": 800,
+        "resizable": false
       }
     ]
   }
