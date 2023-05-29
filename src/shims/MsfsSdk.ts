@@ -2,6 +2,10 @@ export class BaseInstrument {
     protected constructor() {}
     public connectedCallback(): void {}
     public Update(): void {}
+
+    public getGameState(): GameState {
+        return GameState.ingame;
+    }
 }
 
 export function registerInstrument(id: string, Instrument: new() => BaseInstrument) {
