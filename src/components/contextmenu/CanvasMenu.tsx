@@ -17,7 +17,9 @@ export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) 
     const addInstrument = useCallback((instrument: InstrumentConfig) => {
         let [x, y] = clampElementPosition(
             (props.x - transformState.positionX) / transformState.scale,
-            (props.y - transformState.positionY) / transformState.scale
+            (props.y - transformState.positionY) / transformState.scale,
+            instrument.dimensions.width,
+            instrument.dimensions.height,
         );
         dispatch(addElement({
             name: instrument.name,

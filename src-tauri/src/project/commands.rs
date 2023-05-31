@@ -8,16 +8,13 @@ use tauri::State;
 
 #[tauri::command]
 pub fn create_project(
-    path: PathBuf,
-    config: AceConfig,
+    project: AceProject,
     active_project: State<ActiveProject>,
     discord: State<DiscordClient>,
 ) -> Result<AceProject, String> {
-    if path.join(".ace/project.json").exists() {
+    if project.path.join(".ace/project.json").exists() {
         return Err("Project already exists in selected directory.".into());
     }
-
-    let project = AceProject::new(path, config);
     project.write().map_err(|e| e.to_string())?;
 
     // Add project to global state

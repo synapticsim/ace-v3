@@ -25,15 +25,17 @@ export const Home: React.FC = () => {
 
     const [showNewProjectModal, setShowNewProjectModal] = useState<boolean>(false);
 
-    const openProject = useCallback(async () => {
-        const path = await open({
+    const openProject = useCallback(() => {
+        open({
             title: 'Select Project Folder',
             directory: true,
-        }) as string;
-        await loadProject(path);
+        })
+            .then(async (path) => {
+                await loadProject(path as string);
+            });
     }, []);
 
-    const loadProject = useCallback(async (path: string) => {
+    const loadProject = useCallback((path: string) => {
         invoke<AceProject>('load_project', { path })
             .then((project) => {
                 workspaceDispatch(setActive({ project }));
@@ -46,6 +48,7 @@ export const Home: React.FC = () => {
     useEffect(() => {
         appWindow.setResizable(false);
         appWindow.unmaximize();
+
         globalDispatch(initConfig())
             .then(() => console.log('Initialized global state.'))
             .catch((error) => console.error(error));
@@ -86,15 +89,18 @@ export const Home: React.FC = () => {
                     <p>Looks like you haven't opened any projects yet!</p>
                 )}
                 <div className="flex flex-col gap-5">
-                    {recentProjects.map(({ name, path, timestamp }) => (
-                        <Card onClick={() => loadProject(path)}>
-                            <span className="flex gap-3 items-center">
-                                <h3 className="font-medium text-2xl text-amethyst-400">{name}</h3>
-                                <span className="font-xs">Last opened {timeFromTimestamp(timestamp)}</span>
-                            </span>
-                            <span className="font-mono text-sm text-silver-500">{path}</span>
-                        </Card>
-                    ))}
+                    {[...recentProjects]
+                        .sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1))
+                        .map(({ name, path, timestamp }) => (
+                            <Card onClick={() => loadProject(path)}>
+                                <span className="flex gap-3 items-center">
+                                    <h3 className="font-medium text-2xl text-amethyst-400">{name}</h3>
+                                    <span className="font-xs">Last opened {timeFromTimestamp(timestamp)}</span>
+                                </span>
+                                <span className="font-mono text-sm text-silver-500">{path}</span>
+                            </Card>
+                        ))
+                    }
                 </div>
             </div>
             <NewProjectModal

@@ -1,12 +1,13 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 import { Element, InstrumentConfig, AceProject } from '../../types';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../../pages/Workspace';
 
-export function clampElementPosition(x: number, y: number): [number, number] {
+export function clampElementPosition(x: number, y: number, width: number, height: number): [number, number] {
     let newX = Math.round(x / 20) * 20;
     let newY = Math.round(y / 20) * 20;
-    newX = Math.max(0, Math.min(8000, newX));
-    newY = Math.max(0, Math.min(5000, newY));
+    newX = Math.max(0, Math.min(CANVAS_WIDTH - width, newX));
+    newY = Math.max(0, Math.min(CANVAS_HEIGHT - height, newY));
 
     return [newX, newY];
 }
@@ -42,7 +43,12 @@ const projectSlice = createSlice({
                 const element = state.active.config.elements.find((i) => i.uuid === uuid);
 
                 if (element !== undefined) {
-                    const [newX, newY] = clampElementPosition(element.x + dx, element.y + dy);
+                    const [newX, newY] = clampElementPosition(
+                        element.x + dx,
+                        element.y + dy,
+                        element.width,
+                        element.height,
+                    );
                     element.x = newX;
                     element.y = newY;
                 }
@@ -57,12 +63,12 @@ export const projectReducer = projectSlice.reducer;
 export const updateElementsMiddleware: Middleware = (store) => (next) => (action) => {
     next(action);
 
-    const newConfig = store.getState().project.active;
-    if (newConfig !== undefined && (
+    const project = store.getState().project.active;
+    if (project !== undefined && (
         action.type === 'project/addElement'
         || action.type === 'project/removeElement'
         || action.type === 'project/updateElementPosition'
     )) {
-        invoke('update_project', { newConfig }).catch(console.error)
+        invoke('update_project', { newConfig: project.config }).catch(console.error)
     }
 };

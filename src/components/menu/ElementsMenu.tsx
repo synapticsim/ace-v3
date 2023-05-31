@@ -8,17 +8,6 @@ import { invoke } from '@tauri-apps/api/tauri'
 import { InstrumentConfig } from '../../types'
 import { setInstruments } from '../../redux/workspace/projectSlice'
 
-// const Element: React.FC = () => {
-//     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-//         id: uuid,
-//         data: { scale: transformState.scale },
-//     });
-//
-//     return (
-//
-//     );
-// }
-
 interface ElementsMenuProps {
     show?: boolean;
     onClick?: () => void;

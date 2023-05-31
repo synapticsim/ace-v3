@@ -54,7 +54,7 @@
     },
     "windows": [
       {
-        "title": "Advanced Cockpit Editor",
+        "title": "Advanced Cockpit Emulator",
         "fullscreen": false,
         "height": 600,
         "width": 800,

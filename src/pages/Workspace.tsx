@@ -13,6 +13,9 @@ import { ElementsMenu } from '../components/menu/ElementsMenu';
 import { InstrumentConfig, SimVar } from '../types';
 import { appWindow } from '@tauri-apps/api/window';
 
+export const CANVAS_WIDTH = 12000;
+export const CANVAS_HEIGHT = 5000;
+
 enum MenuTabs {
     SimVars,
     Elements,
@@ -87,13 +90,16 @@ const CanvasLayer: React.FC = () => {
             centerOnInit
             minScale={0.25}
             initialScale={0.5}
+            initialPositionX={CANVAS_WIDTH / 2}
+            initialPositionY={CANVAS_HEIGHT / 2}
             wheel={{ step: 0.15 }}
             velocityAnimation={{ equalToMove: false }}
         >
             <TransformComponent wrapperClass="!w-screen !h-screen overflow-hidden">
                 <div
                     ref={containerRef}
-                    className="w-[8000px] h-[5000px] bg-grid"
+                    className="bg-grid"
+                    style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
                     onClick={() => (document.activeElement as HTMLElement)?.blur()}
                     onContextMenu={(e) => {
                         e.preventDefault();

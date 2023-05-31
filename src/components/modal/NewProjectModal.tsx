@@ -32,7 +32,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
                 validationSchema={newProjectSchema}
                 onSubmit={(values) => {
                     const { root: path, ...config } = values;
-                    invoke<AceProject>('create_project', { path, config })
+                    invoke<AceProject>('create_project', { project: { path, config } })
                         .then((project) => {
                             workspaceDispatch(setActive({ project }));
                             navigate('/workspace');
