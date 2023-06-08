@@ -22,11 +22,35 @@
     }
 
     .rc-slider-handle, .rc-slider-handle:hover {
-        @apply opacity-100 border-2 border-amethyst-400 bg-silver-800 ring-0 !ring-opacity-50 ring-amethyst-400 transition-shadow duration-300;
+        @apply opacity-100 border-2 border-amethyst-400 bg-silver-800
+            ring-0 !ring-opacity-50 ring-amethyst-400
+            transition-shadow duration-300;
     }
 
     .rc-slider-handle-dragging, .rc-slider-handle:focus-visible, .rc-slider-handle:active {
         @apply !border-amethyst-400 !shadow-none ring-4 ring-amethyst-400;
+    }
+
+    .titlebar {
+        @apply flex items-center fixed inset-x-0 top-0 h-8 bg-silver-900 pl-5 z-50;
+    }
+
+    .titlebar-title {
+        @apply text-white text-sm font-medium;
+    }
+
+    .titlebar-controls {
+        @apply flex ml-auto mr-1;
+    }
+
+    .titlebar-controls button {
+        @apply flex justify-center items-center w-8 h-8
+            fill-none stroke-white stroke-2
+            disabled:stroke-silver-600 hover:bg-silver-800 disabled:hover:bg-transparent
+            transition-colors duration-150;
+
+        stroke-linecap: round;
+        stroke-linejoin: round;
     }
 }
 

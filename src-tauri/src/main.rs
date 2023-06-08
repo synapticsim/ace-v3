@@ -3,10 +3,12 @@
     windows_subsystem = "windows"
 )]
 
+use tauri::Manager;
 use crate::discord::DiscordClient;
 use crate::project::ActiveProject;
 use crate::server::ResourceRouter;
 use crate::watcher::FileWatcher;
+use window_shadows::set_shadow;
 
 pub mod discord;
 pub mod project;
@@ -16,6 +18,13 @@ pub mod simvars;
 
 fn main() {
     tauri::Builder::default()
+        .setup(move |app| {
+            if cfg!(target_os = "windows") || cfg!(target_os = "linux") {
+                let window = app.get_window("main").unwrap();
+                set_shadow(&window, true).unwrap_or_default();
+            }
+            Ok(())
+        })
         .register_uri_scheme_protocol("ace", server::handle_ace_request)
         .manage(ActiveProject::default())
         .manage(FileWatcher::default())

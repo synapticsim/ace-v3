@@ -55,6 +55,7 @@
     "windows": [
       {
         "title": "Advanced Cockpit Emulator",
+        "decorations": false,
         "fullscreen": false,
         "height": 600,
         "width": 800,

@@ -60,7 +60,7 @@ export const Workspace: React.FC = () => {
     return (
         <DndContext onDragEnd={handleDragEnd}>
             <CanvasLayer />
-            <div className="absolute left-0 top-0 h-screen bg-silver-800 shadow-2xl p-4 flex flex-col gap-4 z-20">
+            <div className="absolute left-0 top-0 h-screen bg-silver-800 shadow-2xl p-4 pt-12 flex flex-col gap-4 z-20">
                 <SimVarsMenu
                     show={currentMenuTab === MenuTabs.SimVars}
                     onClick={() => setMenuTab(MenuTabs.SimVars)}

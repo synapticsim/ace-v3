@@ -22,6 +22,7 @@ notify = { version = "5.0.0", features = ["serde"] }
 notify-debouncer-mini = "0.2.1"
 matchit = "0.7.0"
 discord-rich-presence = "0.2.3"
+window-shadows = "0.2.1"
 
 [features]
 # by default Tauri runs in production mode

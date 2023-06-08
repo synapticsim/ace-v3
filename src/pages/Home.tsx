@@ -60,7 +60,7 @@ export const Home: React.FC = () => {
 
     return (
         <>
-            <div className="container px-20 py-14 h-screen overflow-clip">
+            <div className="container px-20 pt-16 h-screen overflow-clip">
                 <h1 className="flex gap-4 items-center text-4xl text-white mb-8">
                     <span>Welcome to <span className="font-medium text-amethyst-500">ACE</span></span>
                     <span className="rounded-xl px-3 py-1 font-medium text-sm text-amethyst-500 bg-amethyst-500/25">v{version}</span>
