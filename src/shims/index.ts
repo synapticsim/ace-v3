@@ -2,9 +2,12 @@ import { SimVar, simvar } from './SimVar';
 import { Coherent } from './Coherent';
 import { GetStoredData, SetStoredData } from './StoredData';
 import { Avionics, BaseInstrument, GameState, LaunchFlowEvent, registerInstrument, RunwayDesignator } from './MsfsSdk';
+import { fetch_ace } from './fetch';
 
 interface InstrumentContentWindow extends Window {
     ACE_ENGINE_HANDLE: boolean;
+
+    fetch: typeof fetch_ace;
 
     SimVar: typeof SimVar;
     Coherent: typeof Coherent;
@@ -24,6 +27,8 @@ export function installShims(window: Window): void {
     const instrument = window as InstrumentContentWindow;
 
     instrument.ACE_ENGINE_HANDLE = true;
+
+    instrument.fetch = fetch_ace;
 
     instrument.SimVar = SimVar;
     instrument.Coherent = Coherent;
