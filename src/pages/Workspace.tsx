@@ -97,7 +97,7 @@ const CanvasLayer: React.FC = () => {
             wheel={{ step: 0.15 }}
             velocityAnimation={{ equalToMove: false }}
         >
-            {!project?.config.elements?.length && <p className="top-12 left-28 fixed font-bold text-2xl">Right click to add Instruments</p>}
+            {!project?.config.elements?.length && <p className="top-12 left-28 fixed font-bold text-2xl z-[1]">Right click to add Instruments</p>}
             <TransformComponent wrapperClass="!w-screen !h-screen overflow-hidden">
                 <div
                     ref={containerRef}
