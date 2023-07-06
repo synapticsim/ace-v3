@@ -68,13 +68,9 @@ export const FileInput: React.FC<FileInputProps> = ({ options, onFileSelect, ...
     );
 };
 
-export const SliderInput: React.FC<SliderProps> = ({ ...props }) => {
-    return (
-        <Slider
-            {...props}
-        />
-    );
-};
+export const SliderInput: React.FC<SliderProps> = ({ ...props }) => (
+    <Slider {...props} />
+);
 
 export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => (
     <div className="relative w-10 h-5">

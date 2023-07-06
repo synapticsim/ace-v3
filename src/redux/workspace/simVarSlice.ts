@@ -2,7 +2,12 @@ import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 import { invoke } from '@tauri-apps/api/tauri';
 import { SimVar, SimVarType } from '../../types';
 
-export function parseSimVarName(name: string): { type: SimVarType, name: string, index: number, key: string } | undefined {
+export function parseSimVarName(name: string): {
+    type: SimVarType,
+    name: string,
+    index: number,
+    key: string
+} | undefined {
     const match = name.match(/^(?:(?<type>[AEL]):)?(?<name>[^:]+)(?::(?<index>\d))?$/i);
     if (match) {
         const groups = match.groups as { type?: SimVarType, name?: string, index?: string };

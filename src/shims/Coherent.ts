@@ -5,6 +5,7 @@ export namespace Coherent {
         console.log('Coherent.trigger', name, data);
         return null;
     }
+
     export function on(name: string, callback: (...data: any[]) => void): { clear: () => void } {
         console.log('Coherent.on', name, callback);
         return { clear: () => null };
