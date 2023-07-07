@@ -84,7 +84,6 @@ const CanvasLayer: React.FC = () => {
     const dispatch = useWorkspaceDispatch();
 
     const dndContext = useDndContext();
-    console.log(!project?.config.elements?.length);
 
     return (
         <TransformWrapper
