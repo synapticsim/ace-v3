@@ -43,10 +43,10 @@ export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) =
     }, [onExit]);
 
     useEffect(() => {
-        document.addEventListener(KEY_EVENT_TYPE, handleEscKey, false);
+        document.addEventListener(KEY_EVENT_TYPE, handleEscKey);
 
         return () => {
-            document.removeEventListener(KEY_EVENT_TYPE, handleEscKey, false);
+            document.removeEventListener(KEY_EVENT_TYPE, handleEscKey);
         };
     }, [handleEscKey]);
 
