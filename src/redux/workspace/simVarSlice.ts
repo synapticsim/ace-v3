@@ -3,10 +3,10 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { SimVar, SimVarType } from '../../types';
 
 export function parseSimVarName(name: string): {
-    type: SimVarType,
-    name: string,
-    index: number,
-    key: string
+    type: SimVarType;
+    name: string;
+    index: number;
+    key: string;
 } | undefined {
     const match = name.match(/^(?:(?<type>[AEL]):)?(?<name>[^:]+)(?::(?<index>\d))?$/i);
     if (match) {

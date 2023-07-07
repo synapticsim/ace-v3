@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import { FiTrash } from 'react-icons/fi';
 import { ContextMenu, ContextMenuProps } from './index';
-import { useWorkspaceDispatch } from '../../redux/workspace'
-import { removeElement } from '../../redux/workspace/projectSlice'
-import { Element } from '../../types'
+import { useWorkspaceDispatch } from '../../redux/workspace';
+import { removeElement } from '../../redux/workspace/projectSlice';
+import { Element } from '../../types';
 
 interface ElementMenuProps extends Omit<ContextMenuProps, 'children'> {
     element: Element;

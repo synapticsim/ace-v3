@@ -29,12 +29,12 @@ const configSlice = createSlice({
                 path: project.path,
                 timestamp: new Date().toISOString(),
             });
-        }
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(initConfig.fulfilled, (state, action) => action.payload);
-    }
-})
+    },
+});
 
 export const { pushRecentProject } = configSlice.actions;
 export const configReducer = configSlice.reducer;
@@ -44,14 +44,14 @@ const LOCAL_STORAGE_KEY = 'ace_recent_projects';
 export const localStorageMiddleware: Middleware = (store) => (next) => (action) => {
     next(action);
 
-    const recentProjects = store.getState().config.recentProjects;
+    const { recentProjects } = store.getState().config;
     if (recentProjects !== undefined) {
         localStorage.setItem(
             LOCAL_STORAGE_KEY,
             JSON.stringify(recentProjects),
         );
     }
-}
+};
 
 export const initConfig = createAsyncThunk(
     'config/initialize',
@@ -64,6 +64,6 @@ export const initConfig = createAsyncThunk(
             ? []
             : JSON.parse(local) as RecentProject[];
 
-        return { platform, version, recentProjects }
+        return { platform, version, recentProjects };
     },
 );

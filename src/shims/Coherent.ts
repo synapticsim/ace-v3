@@ -1,4 +1,4 @@
-import { simvar } from './SimVar'
+import { simvar } from './SimVar';
 
 export namespace Coherent {
     export function trigger(name: string, ...data: any[]) {

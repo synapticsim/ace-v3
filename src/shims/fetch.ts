@@ -1,6 +1,6 @@
 import { globalStore } from '../redux/global';
 
-export function fetch_ace(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+export function aceFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const baseUrl = globalStore.getState().config.platform === 'win32'
         ? 'https://ace.localhost'
         : 'ace://localhost';
@@ -8,5 +8,5 @@ export function fetch_ace(input: RequestInfo | URL, init?: RequestInit): Promise
     if (typeof input === 'string' && input.startsWith('/')) {
         return fetch(`${baseUrl}${input}`, init);
     }
-    return fetch(input, init)
+    return fetch(input, init);
 }
