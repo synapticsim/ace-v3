@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { FiPlus } from 'react-icons/fi';
 import { v4 } from 'uuid';
+import { useTransformContext } from 'react-zoom-pan-pinch';
 import { ContextMenu, ContextMenuProps } from './index';
-import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../../redux/workspace'
-import { addElement, clampElementPosition } from '../../redux/workspace/projectSlice'
-import { InstrumentConfig } from '../../types'
-import { useTransformContext } from 'react-zoom-pan-pinch'
+import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../../redux/workspace';
+import { addElement, clampElementPosition } from '../../redux/workspace/projectSlice';
+import { InstrumentConfig } from '../../types';
 
 export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) => {
     const instruments = useWorkspaceSelector((state: WorkspaceState) => state.project.instruments);
@@ -15,7 +15,7 @@ export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) 
     const dispatch = useWorkspaceDispatch();
 
     const addInstrument = useCallback((instrument: InstrumentConfig) => {
-        let [x, y] = clampElementPosition(
+        const [x, y] = clampElementPosition(
             (props.x - transformState.positionX) / transformState.scale,
             (props.y - transformState.positionY) / transformState.scale,
             instrument.dimensions.width,
@@ -29,7 +29,7 @@ export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) 
             height: instrument.dimensions.height,
             x,
             y,
-        }))
+        }));
     }, [dispatch]);
 
     return (

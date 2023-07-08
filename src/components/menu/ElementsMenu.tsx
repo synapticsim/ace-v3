@@ -1,12 +1,11 @@
 import React, { useCallback } from 'react';
 import { FiLayout } from 'react-icons/fi';
+import { HiRefresh } from 'react-icons/hi';
+import { invoke } from '@tauri-apps/api/tauri';
+import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../../redux/workspace';
 import { Menu } from './index';
-import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../../redux/workspace'
-import { useDraggable } from '@dnd-kit/core'
-import { HiRefresh } from 'react-icons/hi'
-import { invoke } from '@tauri-apps/api/tauri'
-import { InstrumentConfig } from '../../types'
-import { setInstruments } from '../../redux/workspace/projectSlice'
+import { InstrumentConfig } from '../../types';
+import { setInstruments } from '../../redux/workspace/projectSlice';
 
 interface ElementsMenuProps {
     show?: boolean;
@@ -22,7 +21,7 @@ export const ElementsMenu: React.FC<ElementsMenuProps> = ({ ...props }) => {
         invoke<InstrumentConfig[]>('load_instruments')
             .then((instruments) => dispatch(setInstruments({ instruments })))
             .catch(console.error);
-    }, []);
+    }, [dispatch]);
 
     return (
         <Menu title="Elements" icon={<FiLayout size={25} />} {...props}>

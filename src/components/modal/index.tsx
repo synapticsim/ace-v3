@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 
@@ -32,6 +32,18 @@ export interface ModalProps {
 }
 
 export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) => {
+    // Close modal on Esc press
+    const handleEscKey = useCallback((event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            onExit();
+        }
+    }, [onExit]);
+
+    useEffect(() => {
+        document.addEventListener('keyup', handleEscKey);
+        return () => document.removeEventListener('keyup', handleEscKey);
+    }, [handleEscKey]);
+
     return (
         <AnimatePresence>
             {show && (
@@ -42,6 +54,7 @@ export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) =
                     initial="hidden"
                     animate="visible"
                     exit="hidden"
+                    onClick={onExit}
                 >
                     <motion.div
                         className="relative max-w-1/2 mx-auto bg-silver-800 rounded-2xl shadow-2xl"
@@ -55,10 +68,15 @@ export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) =
                         initial="hidden"
                         animate="visible"
                         exit="hidden"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <div className="px-8 py-5 bg-silver-700 rounded-t-2xl flex justify-between items-center">
                             <h3 className="font-medium">{title}</h3>
-                            <FiX size={30} className="text-silver-400 cursor-pointer" onClick={onExit} />
+                            <FiX
+                                size={30}
+                                className="text-silver-400 cursor-pointer hover:text-silver-200"
+                                onClick={onExit}
+                            />
                         </div>
                         <div className="p-8">
                             {children}

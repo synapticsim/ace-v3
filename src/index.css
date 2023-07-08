@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+    html {
+        overflow: hidden;
+    }
+
     :root {
         @apply bg-silver-950 text-silver-200;
 

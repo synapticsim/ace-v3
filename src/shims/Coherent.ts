@@ -1,10 +1,11 @@
-import { simvar } from './SimVar'
+import { simvar } from './SimVar';
 
 export namespace Coherent {
     export function trigger(name: string, ...data: any[]) {
         console.log('Coherent.trigger', name, data);
         return null;
     }
+
     export function on(name: string, callback: (...data: any[]) => void): { clear: () => void } {
         console.log('Coherent.on', name, callback);
         return { clear: () => null };

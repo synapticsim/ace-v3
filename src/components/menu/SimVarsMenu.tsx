@@ -45,7 +45,10 @@ const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ varKey }) => {
                 <button className="mr-0.5" onClick={() => dispatch(togglePin({ key: formatKey(simVar) }))}>
                     <RiPushpin2Line
                         size={20}
-                        className={classNames({ 'text-amethyst-400': simVar.pinned, 'text-silver-700': !simVar.pinned })}
+                        className={classNames({
+                            'text-amethyst-400': simVar.pinned,
+                            'text-silver-700': !simVar.pinned,
+                        })}
                     />
                 </button>
             </div>
@@ -86,7 +89,7 @@ const SimVarSection: React.FC<SimVarSectionProps> = ({ filter }) => {
         >
             {simVars.map((v) => {
                 const varKey = formatKey(v);
-                return <SimVarSlider key={varKey} varKey={varKey} />
+                return <SimVarSlider key={varKey} varKey={varKey} />;
             })}
         </div>
     );

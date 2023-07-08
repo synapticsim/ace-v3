@@ -54,7 +54,7 @@ pub fn watch(
         .insert(instrument.clone(), debouncer);
 
     thread::spawn(move || {
-        while let Ok(event) = rx.recv() {
+        while let Ok(_event) = rx.recv() {
             window.emit("reload", instrument.as_str()).unwrap();
         }
     });

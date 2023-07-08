@@ -1,7 +1,9 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { DndContext, DragEndEvent, useDndContext } from '@dnd-kit/core';
 import { invoke } from '@tauri-apps/api/tauri';
+import { appWindow } from '@tauri-apps/api/window';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
 import { setMenu } from '../redux/workspace/contextMenuSlice';
 import { formatKey, newSimVar } from '../redux/workspace/simVarSlice';
@@ -11,7 +13,6 @@ import { SimVarsMenu } from '../components/menu/SimVarsMenu';
 import { CanvasMenu } from '../components/contextmenu/CanvasMenu';
 import { ElementsMenu } from '../components/menu/ElementsMenu';
 import { InstrumentConfig, SimVar } from '../types';
-import { appWindow } from '@tauri-apps/api/window';
 
 export const CANVAS_WIDTH = 12000;
 export const CANVAS_HEIGHT = 5000;
@@ -46,7 +47,7 @@ export const Workspace: React.FC = () => {
                         name: formatKey(simVar),
                         unit: simVar.unit,
                         value: simVar.value,
-                    }))
+                    }));
                 }
                 console.info(`[${projectName}] Loaded SimVars from project configuration`);
             });
@@ -95,6 +96,7 @@ const CanvasLayer: React.FC = () => {
             wheel={{ step: 0.15 }}
             velocityAnimation={{ equalToMove: false }}
         >
+            {!project?.config.elements?.length && <p className="top-12 left-28 fixed font-bold text-2xl z-[1]">Right click to add Instruments</p>}
             <TransformComponent wrapperClass="!w-screen !h-screen overflow-hidden">
                 <div
                     ref={containerRef}

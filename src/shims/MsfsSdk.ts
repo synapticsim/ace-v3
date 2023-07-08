@@ -1,6 +1,8 @@
 export class BaseInstrument {
     protected constructor() {}
+
     public connectedCallback(): void {}
+
     public Update(): void {}
 
     public getGameState(): GameState {
