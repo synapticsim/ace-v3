@@ -82,7 +82,11 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
         const iframe = iframeRef.current;
         if (iframe && iframe.contentWindow) {
             installShims(iframe.contentWindow);
-            updateInterval.current = window.setInterval(() => iframe.contentDocument?.getElementById('ROOT_ELEMENT')?.dispatchEvent(new CustomEvent('update')), 50);
+            updateInterval.current = window.setInterval(() => (
+                iframe.contentDocument
+                    ?.getElementById('ROOT_ELEMENT')
+                    ?.dispatchEvent(new CustomEvent('update'))
+            ), 50);
         }
     }, [iframeRef]);
 
@@ -150,7 +154,12 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
         >
             <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-silver-800 bg-silver-800 rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
-                    <span className="w-1/4 h-2 bg-silver-700 rounded-b-full outline-0" ref={setNodeRef} {...listeners} {...attributes} />
+                    <span
+                        className="w-1/4 h-2 bg-silver-700 rounded-b-full outline-0"
+                        ref={setNodeRef}
+                        {...listeners}
+                        {...attributes}
+                    />
                 </div>
                 <div className="px-4 py-1.5 flex gap-3 items-center">
                     <h4 className="font-medium">{name}</h4>
@@ -167,7 +176,12 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
             <div className="absolute w-full h-full box-content border-2 border-silver-700 bg-black">
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
-            <div className={`absolute w-full h-full box-content border-2 border-silver-700 bg-transparent ${interactable ? 'pointer-events-none' : ''}`} />
+            <div
+                className={classNames(
+                    'absolute w-full h-full box-content border-2 border-silver-700 bg-transparent',
+                    { 'pointer-events-none': interactable },
+                )}
+            />
         </div>
     );
 };
