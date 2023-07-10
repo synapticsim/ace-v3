@@ -1,7 +1,8 @@
-import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { renderToString } from 'react-dom/server';
 import { HiRefresh } from 'react-icons/hi';
 import { useTransformContext } from 'react-zoom-pan-pinch';
+import { Tooltip } from 'react-tooltip';
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { useDraggable } from '@dnd-kit/core';
@@ -20,38 +21,40 @@ interface InstrumentFrameProps {
     ref: Ref<HTMLIFrameElement>;
 }
 
-const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(({ name, width, height }, ref: ForwardedRef<HTMLIFrameElement>) => {
-    const platform = useGlobalSelector((state: GlobalState) => state.config.platform);
+const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(
+    forwardRef(({ name, width, height }, ref: ForwardedRef<HTMLIFrameElement>) => {
+        const platform = useGlobalSelector((state: GlobalState) => state.config.platform);
 
-    const baseUrl = useMemo(() => (platform === 'win32' ? 'https://ace.localhost' : 'ace://localhost'), [platform]);
+        const baseUrl = useMemo(() => (platform === 'win32' ? 'https://ace.localhost' : 'ace://localhost'), [platform]);
 
-    if (platform === undefined) return null;
+        if (platform === undefined) return null;
 
-    return (
-        <iframe
-            name={name}
-            title={name}
-            ref={ref}
-            width={width}
-            height={height}
-            tabIndex={-1}
-            srcDoc={renderToString(
-                <html>
-                    <head>
-                        <title>{name}</title>
-                        <script type="text/javascript" defer crossOrigin="anonymous" src={`${baseUrl}/project/${name}/bundle.js`} />
-                        <link rel="stylesheet" href={`${baseUrl}/project/${name}/bundle.css`} />
-                    </head>
-                    <body style={{ overflow: 'hidden', margin: 0 }}>
-                        <div id="ROOT_ELEMENT">
-                            <div id="MSFS_REACT_MOUNT" />
-                        </div>
-                    </body>
-                </html>,
-            )}
-        />
-    );
-}));
+        return (
+            <iframe
+                name={name}
+                title={name}
+                ref={ref}
+                width={width}
+                height={height}
+                tabIndex={-1}
+                srcDoc={renderToString(
+                    <html>
+                        <head>
+                            <title>{name}</title>
+                            <script type="text/javascript" defer crossOrigin="anonymous" src={`${baseUrl}/project/${name}/bundle.js`} />
+                            <link rel="stylesheet" href={`${baseUrl}/project/${name}/bundle.css`} />
+                        </head>
+                        <body style={{ overflow: 'hidden', margin: 0 }}>
+                            <div id="ROOT_ELEMENT">
+                                <div id="MSFS_REACT_MOUNT" />
+                            </div>
+                        </body>
+                    </html>,
+                )}
+            />
+        );
+    }),
+);
 
 export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width, height }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -71,15 +74,15 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
         data: { scale: transformState.scale },
     });
 
+    const [interactable, setInteractable] = useState(false);
+
     const setupInstrument = useCallback(() => {
         clearInterval(updateInterval.current);
 
         const iframe = iframeRef.current;
         if (iframe && iframe.contentWindow) {
             installShims(iframe.contentWindow);
-            updateInterval.current = window.setInterval(() => (
-                iframe.contentDocument?.getElementById('ROOT_ELEMENT')?.dispatchEvent(new CustomEvent('update'))
-            ), 50);
+            updateInterval.current = window.setInterval(() => iframe.contentDocument?.getElementById('ROOT_ELEMENT')?.dispatchEvent(new CustomEvent('update')), 50);
         }
     }, [iframeRef]);
 
@@ -94,23 +97,29 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
         }
     }, [iframeRef, setupInstrument]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleWatch = useCallback(async (event: React.MouseEvent<HTMLInputElement>) => {
-        if (event.currentTarget.checked) {
-            invoke('watch', { instrument: name }).catch(console.error);
-            reloadUnlisten.current = await listen<string>('reload', (e) => {
-                if (e.payload === name) {
-                    refresh();
-                }
-            });
-        } else {
-            invoke('unwatch', { instrument: name }).catch(console.error);
-            reloadUnlisten.current?.();
-        }
-    }, [name, refresh]);
+    const handleWatch = useCallback(
+        async (event: React.MouseEvent<HTMLInputElement>) => {
+            if (event.currentTarget.checked) {
+                invoke('watch', { instrument: name }).catch(console.error);
+                reloadUnlisten.current = await listen<string>('reload', (e) => {
+                    if (e.payload === name) {
+                        refresh();
+                    }
+                });
+            } else {
+                invoke('unwatch', { instrument: name }).catch(console.error);
+                reloadUnlisten.current?.();
+            }
+        },
+        [name, refresh],
+    );
 
-    const handleElementMenu = useCallback((e: React.MouseEvent) => {
-        dispatch(setMenu(<ElementMenu element={{ uuid, name, element, x, y, width, height }} x={e.clientX} y={e.clientY} />));
-    }, [dispatch]);
+    const handleElementMenu = useCallback(
+        (e: React.MouseEvent) => {
+            dispatch(setMenu(<ElementMenu element={{ uuid, name, element, x, y, width, height }} x={e.clientX} y={e.clientY} />));
+        },
+        [dispatch],
+    );
 
     useEffect(() => {
         if (iframeRef.current) {
@@ -141,24 +150,24 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
         >
             <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-silver-800 bg-silver-800 rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
-                    <span
-                        className="w-1/4 h-2 bg-silver-700 rounded-b-full outline-0"
-                        ref={setNodeRef}
-                        {...listeners}
-                        {...attributes}
-                    />
+                    <span className="w-1/4 h-2 bg-silver-700 rounded-b-full outline-0" ref={setNodeRef} {...listeners} {...attributes} />
                 </div>
                 <div className="px-4 py-1.5 flex gap-3 items-center">
                     <h4 className="font-medium">{name}</h4>
-                    <button className="ml-auto" onClick={refresh}>
+                    <ToggleInput tooltip="Toggle Interaction Mode" onClick={() => setInteractable(!interactable)} />
+
+                    <button data-tooltip-id="refresh" className="ml-auto" onClick={refresh}>
                         <HiRefresh className="cursor-pointer active:text-silver-500" size={22} />
                     </button>
-                    <ToggleInput onClick={handleWatch} />
+                    <Tooltip id="refresh" place="top" content="Refresh Instrument" />
+
+                    <ToggleInput tooltip="Toggle Auto-Refresh" onClick={handleWatch} />
                 </div>
             </div>
             <div className="absolute w-full h-full box-content border-2 border-silver-700 bg-black">
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
+            <div className={`absolute w-full h-full box-content border-2 border-silver-700 bg-transparent ${interactable ? 'pointer-events-none' : ''}`} />
         </div>
     );
 };

@@ -1,5 +1,6 @@
-import React, { InputHTMLAttributes, useCallback, useState } from 'react';
+import React, { InputHTMLAttributes, useCallback, useId, useState } from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
+import { Tooltip } from 'react-tooltip';
 import classNames from 'classnames';
 import { open, OpenDialogOptions } from '@tauri-apps/api/dialog';
 import Slider, { SliderProps } from 'rc-slider';
@@ -26,14 +27,7 @@ export const Input: React.FC<InputProps> = ({ label, error, className, ...props 
         {error && (
             <div className="absolute right-3 bottom-3">
                 <FiAlertCircle size={22} className="peer stroke-red-500" />
-                <span
-                    className={classNames(
-                        'absolute -top-1 left-7 px-2 py-1 bg-red-500 rounded-md opacity-0 pointer-events-none',
-                        'peer-hover:opacity-100 duration-200',
-                    )}
-                >
-                    {error}
-                </span>
+                <span className={classNames('absolute -top-1 left-7 px-2 py-1 bg-red-500 rounded-md opacity-0 pointer-events-none', 'peer-hover:opacity-100 duration-200')}>{error}</span>
             </div>
         )}
     </div>
@@ -58,33 +52,26 @@ export const FileInput: React.FC<FileInputProps> = ({ options, onFileSelect, ...
 
     return (
         // TODO: Replace with type="file"
-        <Input
-            readOnly
-            value={currentValue && !Array.isArray(currentValue) ? currentValue : ''}
-            className="cursor-pointer"
-            onClick={handleClick}
-            {...props}
-        />
+        <Input readOnly value={currentValue && !Array.isArray(currentValue) ? currentValue : ''} className="cursor-pointer" onClick={handleClick} {...props} />
     );
 };
 
-export const SliderInput: React.FC<SliderProps> = ({ ...props }) => (
-    <Slider {...props} />
-);
+export const SliderInput: React.FC<SliderProps> = ({ ...props }) => <Slider {...props} />;
 
-export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => (
-    <div className="relative w-10 h-5">
-        <input
-            type="checkbox"
-            className={classNames('opacity-0 w-full h-full cursor-pointer peer', className)}
-            {...props}
-        />
-        <div className="absolute top-0 left-0 w-full h-full rounded-full bg-silver-700 pointer-events-none" />
-        <div
-            className={classNames(
-                'absolute top-1 left-1 w-3 h-3 rounded-full bg-silver-600 duration-100 pointer-events-none',
-                'peer-checked:bg-amethyst-400 peer-checked:left-6',
-            )}
-        />
-    </div>
-);
+interface ToggleInputProps extends InputHTMLAttributes<HTMLInputElement> {
+    tooltip?: string;
+}
+export const ToggleInput: React.FC<ToggleInputProps> = ({ tooltip, className, ...props }) => {
+    const id = useId();
+
+    return (
+        <div>
+            <div data-tooltip-id={id} className="relative w-10 h-5">
+                <input type="checkbox" className={classNames('opacity-0 w-full h-full cursor-pointer peer', className)} {...props} />
+                <div className="absolute top-0 left-0 w-full h-full rounded-full bg-silver-700 pointer-events-none" />
+                <div className={classNames('absolute top-1 left-1 w-3 h-3 rounded-full bg-silver-600 duration-100 pointer-events-none', 'peer-checked:bg-amethyst-400 peer-checked:left-6')} />
+            </div>
+            {tooltip && <Tooltip id={id} place="top" content={tooltip} />}
+        </div>
+    );
+};

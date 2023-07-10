@@ -27,6 +27,7 @@
     "react-icons": "^4.10.1",
     "react-redux": "^8.1.1",
     "react-router": "^6.14.1",
+    "react-tooltip": "^5.18.0",
     "react-zoom-pan-pinch": "^3.1.0",
     "uuid": "^9.0.0",
     "yup": "^1.2.0"
