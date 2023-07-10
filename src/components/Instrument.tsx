@@ -2,7 +2,8 @@ import React, { ForwardedRef, forwardRef, memo, Ref, useCallback, useEffect, use
 import { renderToString } from 'react-dom/server';
 import { HiRefresh } from 'react-icons/hi';
 import { useTransformContext } from 'react-zoom-pan-pinch';
-import { Tooltip } from 'react-tooltip';
+import classNames from 'classnames';
+import Tippy from '@tippyjs/react';
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { useDraggable } from '@dnd-kit/core';
@@ -13,6 +14,7 @@ import { Element } from '../types';
 import { ToggleInput } from './Input';
 import { setMenu } from '../redux/workspace/contextMenuSlice';
 import { ElementMenu } from './contextmenu/ElementMenu';
+import 'tippy.js/dist/tippy.css';
 
 interface InstrumentFrameProps {
     name: string;
@@ -165,10 +167,11 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                     <h4 className="font-medium">{name}</h4>
                     <ToggleInput tooltip="Toggle Interaction Mode" onClick={() => setInteractable(!interactable)} />
 
-                    <button data-tooltip-id="refresh" className="ml-auto" onClick={refresh}>
-                        <HiRefresh className="cursor-pointer active:text-silver-500" size={22} />
-                    </button>
-                    <Tooltip id="refresh" place="top" content="Refresh Instrument" />
+                    <Tippy content="Refresh Instrument" appendTo={document.body}>
+                        <button className="ml-auto" onClick={refresh}>
+                            <HiRefresh className="cursor-pointer active:text-silver-500" size={22} />
+                        </button>
+                    </Tippy>
 
                     <ToggleInput tooltip="Toggle Auto-Refresh" onClick={handleWatch} />
                 </div>
