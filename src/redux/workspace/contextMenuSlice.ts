@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ContextMenuState {
     active?: ReactElement;
@@ -14,8 +14,8 @@ const contextMenuSlice = createSlice({
         },
         clearMenu(state) {
             state.active = undefined;
-        }
-    }
+        },
+    },
 });
 
 export const { setMenu, clearMenu } = contextMenuSlice.actions;

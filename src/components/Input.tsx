@@ -18,7 +18,7 @@ export const Input: React.FC<InputProps> = ({ label, error, className, ...props 
             className={classNames(
                 'px-4 py-2 rounded-md bg-transparent outline-0 ring-0 border-2 block',
                 'duration-300 focus:ring-4 focus:ring-opacity-50',
-                { 'border-silver-600': !error, 'border-red-500': error, 'ring-silver-600': !error, 'ring-red-500': error },
+                { 'border-theme-workspace-padding': !error, 'border-red-500': error, 'ring-theme-workspace-padding': !error, 'ring-red-500': error },
                 className,
             )}
             {...props}
@@ -68,13 +68,9 @@ export const FileInput: React.FC<FileInputProps> = ({ options, onFileSelect, ...
     );
 };
 
-export const SliderInput: React.FC<SliderProps> = ({ ...props }) => {
-    return (
-        <Slider
-            {...props}
-        />
-    );
-};
+export const SliderInput: React.FC<SliderProps> = ({ ...props }) => (
+    <Slider {...props} />
+);
 
 export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => (
     <div className="relative w-10 h-5">
@@ -83,11 +79,11 @@ export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ c
             className={classNames('opacity-0 w-full h-full cursor-pointer peer', className)}
             {...props}
         />
-        <div className="absolute top-0 left-0 w-full h-full rounded-full bg-silver-700 pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-full rounded-full bg-theme-workspace-padding pointer-events-none" />
         <div
             className={classNames(
-                'absolute top-1 left-1 w-3 h-3 rounded-full bg-silver-600 duration-100 pointer-events-none',
-                'peer-checked:bg-amethyst-400 peer-checked:left-6',
+                'absolute top-1 left-1 w-3 h-3 rounded-full bg-theme-padding duration-100 pointer-events-none',
+                'peer-checked:bg-theme-primary peer-checked:left-6',
             )}
         />
     </div>

@@ -69,6 +69,6 @@ export const updateElementsMiddleware: Middleware = (store) => (next) => (action
         || action.type === 'project/removeElement'
         || action.type === 'project/updateElementPosition'
     )) {
-        invoke('update_project', { newConfig: project.config }).catch(console.error)
+        invoke('update_project', { newConfig: project.config }).catch(console.error);
     }
 };

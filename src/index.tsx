@@ -1,4 +1,4 @@
-import { appWindow } from '@tauri-apps/api/window'
+import { appWindow } from '@tauri-apps/api/window';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
@@ -7,19 +7,20 @@ import { globalStore, GlobalStoreContext } from './redux/global';
 import { workspaceStore, WorkspaceStoreContext } from './redux/workspace';
 import { Home } from './pages/Home';
 import { Workspace } from './pages/Workspace';
-import "@fontsource-variable/jetbrains-mono";
-import "@fontsource-variable/space-grotesk";
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/space-grotesk';
 import './index.css';
+import { AppearanceSettings, SettingsMenu } from './pages/Settings';
 
 document
     .getElementById('titlebar-minimize')!
-    .addEventListener('click', () => appWindow.minimize())
+    .addEventListener('click', () => appWindow.minimize());
 document
     .getElementById('titlebar-maximize')!
-    .addEventListener('click', () => appWindow.toggleMaximize())
+    .addEventListener('click', () => appWindow.toggleMaximize());
 document
     .getElementById('titlebar-close')!
-    .addEventListener('click', () => appWindow.close())
+    .addEventListener('click', () => appWindow.close());
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
@@ -29,6 +30,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path="/workspace" element={<Workspace />} />
+                        <Route path="/settings" element={<SettingsMenu />} />
+                        <Route path="/appearancesettings" element={<AppearanceSettings />} />
                     </Routes>
                 </MemoryRouter>
             </Provider>

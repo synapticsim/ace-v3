@@ -12,32 +12,30 @@ interface MenuProps {
     children?: ReactNode;
 }
 
-export const Menu: React.FC<MenuProps> = ({ title, icon, show, onClick, onExit, children }) => {
-    return (
-        <>
-            <button
-                className={classNames(
-                    'w-14 h-14 flex items-center justify-center bg-silver-700 rounded-xl cursor-pointer ring-silver-700 ring-opacity-50 duration-200',
-                    { 'ring-0': !show, 'ring-4': show },
-                )}
-                onClick={show ? onExit : onClick}
-            >
-                {icon}
-            </button>
-            {/* TODO: Don't unmount component, just hide */}
-            <AnimatePresence>
-                {show && (
-                    <div className="absolute left-28 top-4 w-[26rem] bg-silver-800 shadow-2xl rounded-2xl z-30 overflow-hidden">
-                        <div className="px-6 py-4 bg-silver-700 flex justify-between items-center">
-                            <h4 className="font-medium">{title}</h4>
-                            <button onClick={onExit}>
-                                <FiX size={30} className="text-silver-400" />
-                            </button>
-                        </div>
-                        {children}
+export const Menu: React.FC<MenuProps> = ({ title, icon, show, onClick, onExit, children }) => (
+    <>
+        <button
+            className={classNames(
+                'w-14 h-14 flex items-center justify-center bg-theme-workspace-padding rounded-xl cursor-pointer ring-theme-primary duration-200',
+                { 'ring-0': !show, 'ring-4': show },
+            )}
+            onClick={show ? onExit : onClick}
+        >
+            {icon}
+        </button>
+        {/* TODO: Don't unmount component, just hide */}
+        <AnimatePresence>
+            {show && (
+                <div className="absolute left-28 top-4 w-[26rem] bg-theme-padding shadow-2xl rounded-2xl z-30 overflow-hidden">
+                    <div className="px-6 py-4 bg-theme-workspace-padding flex justify-between items-center">
+                        <h4 className="font-medium">{title}</h4>
+                        <button onClick={onExit}>
+                            <FiX size={30} className="text-theme-workspace-padding cursor-pointer hover:text-theme-text" />
+                        </button>
                     </div>
-                )}
-            </AnimatePresence>
-        </>
-    );
-};
+                    {children}
+                </div>
+            )}
+        </AnimatePresence>
+    </>
+);

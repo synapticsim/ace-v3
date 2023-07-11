@@ -1,7 +1,7 @@
 {
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
     "devPath": "http://localhost:1420",
     "distDir": "../dist"
   },
@@ -57,8 +57,8 @@
         "title": "Advanced Cockpit Emulator",
         "decorations": false,
         "fullscreen": false,
-        "height": 600,
-        "width": 800,
+        "height": 800,
+        "width": 1100,
         "resizable": false
       }
     ]

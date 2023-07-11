@@ -27,7 +27,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, children }) => {
             tabIndex={-1}
             ref={menuRef}
             style={{ left: x, top: y }}
-            className="absolute pointer-events-auto flex flex-col outline-0 bg-silver-800 rounded-lg overflow-hidden shadow-2xl text-sm"
+            className="absolute pointer-events-auto flex flex-col outline-0 bg-theme-background rounded-lg overflow-hidden shadow-2xl text-sm"
         >
             {children}
         </div>

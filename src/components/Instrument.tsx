@@ -10,8 +10,8 @@ import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../r
 import { installShims } from '../shims';
 import { Element } from '../types';
 import { ToggleInput } from './Input';
-import { setMenu } from '../redux/workspace/contextMenuSlice'
-import { ElementMenu } from './contextmenu/ElementMenu'
+import { setMenu } from '../redux/workspace/contextMenuSlice';
+import { ElementMenu } from './contextmenu/ElementMenu';
 
 interface InstrumentFrameProps {
     name: string;
@@ -23,7 +23,7 @@ interface InstrumentFrameProps {
 const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(({ name, width, height }, ref: ForwardedRef<HTMLIFrameElement>) => {
     const platform = useGlobalSelector((state: GlobalState) => state.config.platform);
 
-    const baseUrl = useMemo(() => platform === 'win32' ? 'https://ace.localhost' : 'ace://localhost', [platform]);
+    const baseUrl = useMemo(() => (platform === 'win32' ? 'https://ace.localhost' : 'ace://localhost'), [platform]);
 
     if (platform === undefined) return null;
 
@@ -38,6 +38,7 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(({ name,
             srcDoc={renderToString(
                 <html>
                     <head>
+                        <title>{name}</title>
                         <script type="text/javascript" defer crossOrigin="anonymous" src={`${baseUrl}/project/${name}/bundle.js`} />
                         <link rel="stylesheet" href={`${baseUrl}/project/${name}/bundle.css`} />
                     </head>
@@ -108,7 +109,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
     }, [name, refresh]);
 
     const handleElementMenu = useCallback((e: React.MouseEvent) => {
-        dispatch(setMenu(<ElementMenu element={{ uuid, name, element, x, y, width, height }} x={e.clientX} y={e.clientY} />))
+        dispatch(setMenu(<ElementMenu element={{ uuid, name, element, x, y, width, height }} x={e.clientX} y={e.clientY} />));
     }, [dispatch]);
 
     useEffect(() => {
@@ -138,10 +139,10 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 height,
             }}
         >
-            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-silver-800 bg-silver-800 rounded-t-xl">
+            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-theme-padding bg-theme-padding rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
                     <span
-                        className="w-1/4 h-2 bg-silver-700 rounded-b-full outline-0"
+                        className="w-1/4 h-2 bg-theme-workspace-padding rounded-b-full outline-0"
                         ref={setNodeRef}
                         {...listeners}
                         {...attributes}
@@ -150,12 +151,12 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 <div className="px-4 py-1.5 flex gap-3 items-center">
                     <h4 className="font-medium">{name}</h4>
                     <button className="ml-auto" onClick={refresh}>
-                        <HiRefresh className="cursor-pointer active:text-silver-500" size={22} />
+                        <HiRefresh className="cursor-pointer active:text-theme-padding" size={22} />
                     </button>
                     <ToggleInput onClick={handleWatch} />
                 </div>
             </div>
-            <div className="absolute w-full h-full box-content border-2 border-silver-700 bg-black">
+            <div className="absolute w-full h-full box-content border-2 border-theme-workspace-padding bg-black">
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>

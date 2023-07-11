@@ -5,7 +5,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { Modal, ModalProps } from './index';
 import { FileInput, Input } from '../Input';
 import { Button } from '../Button';
-import { useWorkspaceDispatch } from '../../redux/workspace'
+import { useWorkspaceDispatch } from '../../redux/workspace';
 import { setActive } from '../../redux/workspace/projectSlice';
 import { newProjectSchema } from '../../utils/schema';
 import { AceProject } from '../../types';
@@ -21,25 +21,28 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
         <Modal title="New Project" show={show} onExit={onExit}>
             <Formik
                 initialValues={{
-                    name: undefined,
-                    root: undefined,
+                    name: '',
+                    root: '',
                     paths: {
-                        instruments: undefined,
-                        bundles: undefined,
-                        html_ui: undefined,
+                        instruments: '',
+                        bundles: '',
+                        html_ui: '',
                     },
                 }}
                 validationSchema={newProjectSchema}
-                onSubmit={(values) => {
+                onSubmit={(values, { setStatus }) => {
                     const { root: path, ...config } = values;
                     invoke<AceProject>('create_project', { project: { path, config } })
                         .then((project) => {
+                            setStatus('');
                             workspaceDispatch(setActive({ project }));
                             navigate('/workspace');
+                        }).catch((err) => {
+                            setStatus(err);
                         });
                 }}
             >
-                {({ values, errors, setFieldValue, submitCount }) => (
+                {({ values, errors, setFieldValue, submitCount, status }) => (
                     <Form className="flex flex-col gap-4 w-96">
                         <Field
                             as={Input}
@@ -98,7 +101,8 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
                                 defaultPath: values.root,
                             }}
                         />
-                        <Button className="bg-slate-700 ring-slate-700" type="submit">Submit</Button>
+                        {status && <p className="text-red-500">{status}</p>}
+                        <Button className="bg-theme-background hover:bg-theme-padding ring-theme-primary text-theme-text font-bold" type="submit">Submit</Button>
                     </Form>
                 )}
             </Formik>

@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { createDispatchHook, createSelectorHook, ReactReduxContextValue } from 'react-redux';
 import { AnyAction, combineReducers, configureStore, ThunkDispatch } from '@reduxjs/toolkit';
-import { localStorageMiddleware, configReducer } from './configSlice';
+import { localStorageMiddleware, configReducer, logger } from './configSlice';
 
 const globalReducer = combineReducers({
     config: configReducer,
@@ -9,7 +9,7 @@ const globalReducer = combineReducers({
 
 export const globalStore = configureStore({
     reducer: globalReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(localStorageMiddleware),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(localStorageMiddleware, logger),
 });
 
 export type GlobalState = ReturnType<typeof globalStore.getState>;
