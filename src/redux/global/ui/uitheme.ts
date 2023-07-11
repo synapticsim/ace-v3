@@ -2,13 +2,21 @@ import colors, { ColorPalette } from './colors';
 
 export interface ThemeConfig {
     name: string;
+    title: string;
     colors: ColorPalette;
 }
 
-// using a map since it's more clear to read fetched items than an array
-// The name member makes debugging easier
+const themeTitles = new Map([
+    ['amethyst-dark', 'Amethyst Dark'],
+    ['flybywire-dark', 'FlyByWire Dark'],
+    ['atom-one-dark', 'Atom One Dark'],
+    ['monokai', 'Monokai'],
+]);
+
+// Then modify the theme creation code to include the title:
 export const themes = Object.entries(colors).map(([name, color]) => ({
     name,
+    title: themeTitles.get(name), // This will match the title based on the name
     colors: color,
 }));
 

@@ -67,7 +67,7 @@ export const themeButtons = themes.map((theme) => {
 
     return {
         themeName: theme.name,
-        title,
+        title: theme.title,
         className: 'hover:font-semibold',
     };
 });
