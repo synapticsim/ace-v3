@@ -25,5 +25,6 @@ themes.forEach((theme) => themeConfigs.set(theme.name, theme));
 
 export const fallbackThemeConfig: ThemeConfig = {
     name: 'amthyst-dark',
+    title: 'Amethyst Dark',
     colors: colors['amethyst-dark'],
 };
