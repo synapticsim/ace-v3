@@ -16,7 +16,7 @@ const themeTitles = new Map([
 // Then modify the theme creation code to include the title:
 export const themes = Object.entries(colors).map(([name, color]) => ({
     name,
-    title: themeTitles.get(name), // This will match the title based on the name
+    title: themeTitles.get(name) ?? 'Title', // This will match the title based on the name
     colors: color,
 }));
 
