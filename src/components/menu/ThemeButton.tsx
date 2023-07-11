@@ -7,7 +7,7 @@ import { Button } from '../Button';
 
 export interface ThemeButtonProps {
     themeName: string;
-    title: string;
+    title: string | undefined;
     className?: string;
 }
 

@@ -2,7 +2,7 @@ import colors, { ColorPalette } from './colors';
 
 export interface ThemeConfig {
     name: string;
-    title: string;
+    title: string | undefined;
     colors: ColorPalette;
 }
 
