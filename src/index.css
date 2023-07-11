@@ -9,7 +9,7 @@
 
     :root {
         --primary-color: #9F59F8;
-        --secondary-color: #B47EFA;
+        --accent-color: #B47EFA;
         --text-color: #FFFFFF;
         --padding-color: #202028;
         --workspace-padding-color: #3B3B44;
@@ -33,20 +33,20 @@
     }
 
     .rc-slider-handle, .rc-slider-handle:hover {
-        @apply opacity-100 border-2 ring-0 !ring-opacity-50 
+        @apply opacity-100 border-2 ring-0 !ring-opacity-50
             transition-shadow duration-300;
 
         background-color: var(--padding-color);
         border-color: var(--primary-color);
         --tw-ring-opacity: 0.5 !important;
         --tw-ring-color: var(--primary-color);
-        
+
     }
 
     .rc-slider-handle-dragging, .rc-slider-handle:focus-visible, .rc-slider-handle:active {
         @apply !shadow-none ring-4;
 
-       
+
         border-color: var(--primary-color) !important;
         --tw-ring-opacity: 1 !important;
         --tw-ring-color: var(--primary-color);
@@ -78,81 +78,77 @@
         stroke-linecap: round;
         stroke-linejoin: round;
         stroke: #FFFFFF;
-        
+
         &:hover {
             background-color: var(--background-color);
         }
-    
+
         &:disabled {
             stroke: var(--workspace-padding-color);
-    
+
             &:hover {
                 background-color: transparent;
             }
         }
     }
-    
+
     .text-theme-primary {
         color: var(--primary-color);
     }
-    
+
     .bg-theme-primary {
         background-color: var(--primary-color);
     }
-    
+
     .border-theme-primary {
         border-color: var(--primary-color);
     }
-    
-    .text-theme-secondary {
-        color: var(--secondary-color);
+
+    .text-theme-accent {
+        color: var(--accent-color);
     }
-    
-    .bg-theme-secondary {
-        background-color: var(--secondary-color);
+
+    .bg-theme-accent {
+        background-color: var(--accent-color);
     }
-    
-    .border-theme-secondary {
-        border-color: var(--secondary-color);
+
+    .border-theme-accent {
+        border-color: var(--accent-color);
     }
-    
+
     .text-theme-text {
         color: var(--text-color);
     }
-    
-    .bg-theme-background-2 {
-        background-color: var(--text-color);
-    }
-    
+
     .border-theme-text {
         border-color: var(--text-color);
     }
-    
-    .text-theme-padding {
+
+    .text-theme-pd {
         color: var(--padding-color);
     }
 
-    .text-theme-workspace-padding {
+    .text-theme-workspace-pd {
         color: var(--workspace-padding-color);
     }
-    
-    .bg-theme-padding {
+
+    .bg-theme-pd {
         background-color: var(--padding-color);
     }
-    
-    .border-theme-padding {
+
+    .border-theme-pd {
         border-color: var(--padding-color);
     }
-    
-    .bg-theme-background {
+
+    .bg-theme-bg {
         background-color: var(--background-color);
     }
-    
-    .border-theme-background {
+
+    .border-theme-bg {
         border-color: var(--background-color);
     }
 
-    .bg-theme-workspace-padding {
+    .bg-theme-workspace-pd {
         background-color: var(--workspace-padding-color);
     }
 
@@ -160,20 +156,20 @@
         --tw-ring-color: var(--primary-color);
     }
 
-    .ring-theme-secondary {
-        --tw-ring-color: var(--secondary-color);
+    .ring-theme-accent {
+        --tw-ring-color: var(--accent-color);
     }
-    
-    .ring-theme-workspace-padding {
+
+    .ring-theme-workspace-pd {
         --tw-ring-color: var(--workspace-padding-color);
     }
 
-    .border-theme-workspace-padding {
+    .border-theme-workspace-pd {
         --tw-border-opacity: 1;
         border: 1px solid var(--workspace-padding-color);
     }
 
-    .border-b-theme-workspace-padding {
+    .border-b-theme-workspace-pd {
         border-bottom-color: var(--workspace-padding-color);
     }
 }

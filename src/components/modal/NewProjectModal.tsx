@@ -102,7 +102,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({ show, onExit }
                             }}
                         />
                         {status && <p className="text-red-500">{status}</p>}
-                        <Button className="bg-theme-background hover:bg-theme-padding ring-theme-primary text-theme-text font-bold" type="submit">Submit</Button>
+                        <Button className="bg-theme-bg hover:bg-theme-pd ring-theme-primary text-theme-text font-bold" type="submit">Submit</Button>
                     </Form>
                 )}
             </Formik>

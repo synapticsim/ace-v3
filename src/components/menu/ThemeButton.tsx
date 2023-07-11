@@ -18,7 +18,7 @@ export const ThemeButton: React.FC<ThemeButtonProps> = ({ themeName, title, clas
 
     const themeConfig = theme !== undefined ? theme : fallbackThemeConfig;
 
-    const { colors: { primary, secondary, text, padding, workspacePadding, background } } = themeConfig;
+    const { colors: { primary, accent, text, padding, workspacePadding, background } } = themeConfig;
 
     const [selected, setSelected] = useState(themeConfig.name === themeName);
 
@@ -39,35 +39,30 @@ export const ThemeButton: React.FC<ThemeButtonProps> = ({ themeName, title, clas
 
     useEffect(() => {
         document.documentElement.style.setProperty('--primary-color', primary);
-        document.documentElement.style.setProperty('--secondary-color', secondary);
+        document.documentElement.style.setProperty('--accent-color', accent);
         document.documentElement.style.setProperty('--text-color', text);
         document.documentElement.style.setProperty('--padding-color', padding);
         document.documentElement.style.setProperty('--workspace-padding-color', workspacePadding);
         document.documentElement.style.setProperty('--background-color', background);
-    }, [background, padding, primary, secondary, workspacePadding, text]);
+    }, [background, padding, primary, accent, workspacePadding, text]);
 
     return (
         <Button className={`flex w-64 ${className}`} onClick={() => changeTheme(themeName)}>
-            {selected
-                ? <MdCheckCircle className="mt-1 mx-4 transition-opacity duration-200 ease-in-out opacity-100" size={20} />
-                : <MdCheckCircle className="mt-1 mx-4 transition-opacity duration-200 ease-in-out opacity-0" size={20} />}
+            <MdCheckCircle
+                className={`mt-1 mx-4 transition-opacity duration-200 ease-in-out 
+                ${selected ? 'opacity-100' : 'opacity-0'}`}
+                size={20}
+            />
             {title}
         </Button>
     );
 };
 
 export const themeButtons = themes.map((theme) => {
-    let title;
-
-    if (theme.name.includes('flybywire')) {
-        title = 'FlyByWire';
-    } else {
-        title = theme.name.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    }
 
     return {
         themeName: theme.name,
         title: theme.title,
-        className: 'hover:font-semibold',
+        className: 'font-mono hover:font-semibold',
     };
 });

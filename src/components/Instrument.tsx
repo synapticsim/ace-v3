@@ -139,10 +139,10 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 height,
             }}
         >
-            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-theme-padding bg-theme-padding rounded-t-xl">
+            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-theme-pd bg-theme-pd rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
                     <span
-                        className="w-1/4 h-2 bg-theme-workspace-padding rounded-b-full outline-0"
+                        className="w-1/4 h-2 bg-theme-workspace-pd rounded-b-full outline-0"
                         ref={setNodeRef}
                         {...listeners}
                         {...attributes}
@@ -151,12 +151,12 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 <div className="px-4 py-1.5 flex gap-3 items-center">
                     <h4 className="font-medium">{name}</h4>
                     <button className="ml-auto" onClick={refresh}>
-                        <HiRefresh className="cursor-pointer active:text-theme-padding" size={22} />
+                        <HiRefresh className="cursor-pointer active:text-theme-pd" size={22} />
                     </button>
                     <ToggleInput onClick={handleWatch} />
                 </div>
             </div>
-            <div className="absolute w-full h-full box-content border-2 border-theme-workspace-padding bg-black">
+            <div className="absolute w-full h-full box-content border-2 border-theme-workspace-pd bg-black">
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>

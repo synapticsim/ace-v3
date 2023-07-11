@@ -57,7 +57,7 @@ export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) =
                     onClick={onExit}
                 >
                     <motion.div
-                        className="relative max-w-1/2 mx-auto bg-theme-background rounded-2xl shadow-2xl"
+                        className="relative max-w-1/2 mx-auto bg-theme-bg rounded-2xl shadow-2xl"
                         variants={modalAnimation}
                         transition={{
                             duration: 0.2,
@@ -70,11 +70,11 @@ export const Modal: React.FC<ModalProps> = ({ title, show, onExit, children }) =
                         exit="hidden"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="px-8 py-5 bg-theme-workspace-padding rounded-t-2xl flex justify-between items-center">
+                        <div className="px-8 py-5 bg-theme-workspace-pd rounded-t-2xl flex justify-between items-center">
                             <h3 className="font-medium">{title}</h3>
                             <FiX
                                 size={30}
-                                className="text-theme-padding cursor-pointer hover:text-theme-text"
+                                className="text-theme-pd cursor-pointer hover:text-theme-text"
                                 onClick={onExit}
                             />
                         </div>

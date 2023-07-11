@@ -47,7 +47,7 @@ const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ varKey }) => {
                         size={20}
                         className={classNames({
                             'text-theme-primary': simVar.pinned,
-                            'text-theme-padding': !simVar.pinned,
+                            'text-theme-pd': !simVar.pinned,
                         })}
                     />
                 </button>
@@ -105,14 +105,14 @@ const CollapsibleSimVarSection: React.FC<CollapsibleSimVarSectionProps> = ({ tit
     return (
         <>
             <button
-                className="w-full px-6 py-3 bg-theme-workspace-padding flex items-center justify-between shadow-sm"
+                className="w-full px-6 py-3 bg-theme-workspace-pd flex items-center justify-between shadow-sm"
                 onClick={() => setCollapsed(!collapsed)}
             >
                 <h5>{title}</h5>
                 <FiChevronLeft
                     size={30}
                     className={classNames(
-                        'text-theme-workspace-padding duration-200',
+                        'text-theme-workspace-pd duration-200',
                         { 'rotate-0': collapsed, '-rotate-90': !collapsed },
                     )}
                 />

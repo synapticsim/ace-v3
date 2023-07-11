@@ -18,12 +18,12 @@ export const AppearanceSettings: React.FC = () => {
             <span className="flex justify-between">
                 <div className="flex">
                     <button className="hover:opacity-50 transition" onClick={returnToHome}>
-                        <MdClose className="text-theme-text bg-theme-padding rounded-md text-3xl p-2" />
+                        <MdClose className="text-theme-text bg-theme-pd rounded-md text-3xl p-2" />
                     </button>
-                    <h1 className="text-2xl text-theme-text ml-4">Appearance Settings</h1>
+                    <h1 className="text-2xl text-theme-text ml-4 font-semibold">Settings</h1>
                 </div>
             </span>
-            <h2 className="text-2xl mt-12 font-bold">Themes</h2>
+            <h2 className="text-2xl mt-12">Themes</h2>
             <ul className="text-lg py-4 space-y-2">
                 {themeButtons.map((button) => (
                     <li key={button.themeName}>

@@ -28,16 +28,16 @@ export const Home: React.FC = () => {
 
     const themeConfig = theme !== undefined ? theme : fallbackThemeConfig;
 
-    const { colors: { primary, secondary, text, padding, workspacePadding, background } } = themeConfig;
+    const { colors: { primary, accent, text, padding, workspacePadding, background } } = themeConfig;
 
     useEffect(() => {
         document.documentElement.style.setProperty('--primary-color', primary);
-        document.documentElement.style.setProperty('--secondary-color', secondary);
+        document.documentElement.style.setProperty('--accent-color', accent);
         document.documentElement.style.setProperty('--text-color', text);
         document.documentElement.style.setProperty('--padding-color', padding);
         document.documentElement.style.setProperty('--workspace-padding-color', workspacePadding);
         document.documentElement.style.setProperty('--background-color', background);
-    }, [background, padding, primary, secondary, workspacePadding, text]);
+    }, [background, padding, primary, accent, workspacePadding, text]);
 
     console.log(padding);
 
@@ -86,11 +86,11 @@ export const Home: React.FC = () => {
                 <div className="flex gap-4 items-center text-4xl text-theme-text mb-8">
                     <span>Welcome to <span className="text-theme-primary font-medium">ACE</span></span>
                     <span
-                        className="rounded-xl px-3 py-1 font-medium text-sm bg-theme-padding bg-opacity"
+                        className="rounded-xl px-3 py-1 font-medium text-sm bg-theme-pd bg-opacity"
                     >v{version}
                     </span>
                     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <button onClick={navigateToSettings} className="ml-auto rounded-md p-1 hover:bg-theme-padding transition">
+                    <button onClick={navigateToSettings} className="ml-auto rounded-md p-1 hover:bg-theme-pd transition">
                         <MdSettings size={25} />
                     </button>
                 </div>
@@ -123,10 +123,10 @@ export const Home: React.FC = () => {
                         .map(({ name, path, timestamp }) => (
                             <Card onClick={() => loadProject(path)} key={path}>
                                 <span className="flex gap-3 items-center">
-                                    <h3 className="font-medium text-2xl text-theme-secondary">{name}</h3>
+                                    <h3 className="font-medium text-2xl text-theme-accent">{name}</h3>
                                     <span className="font-xs">Last opened {timeFromTimestamp(timestamp)}</span>
                                 </span>
-                                <span className="font-mono text-sm text-theme-workspce-padding">{path}</span>
+                                <span className="font-mono text-sm text-theme-workspace-pd">{path}</span>
                             </Card>
                         ))}
                 </div>

@@ -1,6 +1,6 @@
 export interface ColorPalette {
     primary: string;
-    secondary: string;
+    accent: string;
     text: string;
     padding: string;
     workspacePadding: string;
@@ -12,7 +12,7 @@ export interface ColorPalette {
 export default {
     'amethyst-dark': {
         primary: '#B47EFA',
-        secondary: '#9F59F8',
+        accent: '#9F59F8',
         text: '#FFFFFF',
         padding: '#202028',
         workspacePadding: '#3B3B44',
