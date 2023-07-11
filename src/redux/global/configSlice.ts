@@ -69,15 +69,6 @@ export const localStorageMiddleware: Middleware = (store) => (next) => (action) 
     }
 };
 
-export const logger: Middleware = (store) => (next) => (action) => {
-    console.group(action.type);
-    console.info('dispatching', action);
-    const result = next(action);
-    console.log('next state', store.getState());
-    console.groupEnd();
-    return result;
-};
-
 export const initConfig = createAsyncThunk(
     'config/initialize',
     async () => {

@@ -9,7 +9,7 @@ const globalReducer = combineReducers({
 
 export const globalStore = configureStore({
     reducer: globalReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(localStorageMiddleware, logger),
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(localStorageMiddleware),
 });
 
 export type GlobalState = ReturnType<typeof globalStore.getState>;
