@@ -22,7 +22,7 @@ interface ConfigState {
 const configSlice = createSlice({
     name: 'config',
     initialState: {
-        theme: JSON.parse(localStorage.getItem(THEME_LOCAL_STORAGE_KEY) || 'amethyst-dark') as ThemeConfig,
+        theme: JSON.parse(localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? JSON.stringify(fallbackThemeConfig)) as ThemeConfig,
     } as ConfigState,
     reducers: {
         pushRecentProject(state, action: PayloadAction<AceProject>) {
