@@ -11,7 +11,6 @@ export const AppearanceSettings: React.FC = () => {
 
     const returnToHome = () => {
         navigate('/');
-        console.log('Return to home');
     };
 
     return (

@@ -10,7 +10,7 @@ export interface ColorPalette {
 // using default export because tailwind.config.cjs doesn't support ESM modules.
 // eslint-disable-next-line import/no-default-export
 export default {
-    'default-dark': {
+    'amethyst-dark': {
         primary: '#B47EFA',
         secondary: '#9F59F8',
         text: '#ffffff',

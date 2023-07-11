@@ -31,7 +31,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         <Route index element={<Home />} />
                         <Route path="/workspace" element={<Workspace />} />
                         <Route path="/settings" element={<SettingsMenu />} />
-                        <Route path="/appearancesettings" element={<AppearanceSettings />} />
                     </Routes>
                 </MemoryRouter>
             </Provider>

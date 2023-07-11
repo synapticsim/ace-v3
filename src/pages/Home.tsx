@@ -83,17 +83,17 @@ export const Home: React.FC = () => {
     return (
         <>
             <div className="container px-20 pt-16 h-screen overflow-clip">
-                <h1 className="flex gap-4 items-center text-4xl text-theme-text mb-8">
+                <div className="flex gap-4 items-center text-4xl text-theme-text mb-8">
                     <span>Welcome to <span className="text-theme-primary font-medium">ACE</span></span>
                     <span
                         className="rounded-xl px-3 py-1 font-medium text-sm bg-theme-padding bg-opacity"
                     >v{version}
                     </span>
                     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                    <button onClick={navigateToSettings} className="rounded-md p-1 bg-theme-padding hover:opacity-50 transition">
-                        <MdSettings />
+                    <button onClick={navigateToSettings} className="ml-auto rounded-md p-1 hover:bg-theme-padding transition">
+                        <MdSettings size={25} />
                     </button>
-                </h1>
+                </div>
                 <div className="grid grid-cols-2 gap-6 mb-16">
                     <Card
                         className="flex gap-4 items-center"

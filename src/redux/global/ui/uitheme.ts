@@ -16,6 +16,6 @@ export const themeConfigs = new Map<String, ThemeConfig>();
 themes.forEach((theme) => themeConfigs.set(theme.name, theme));
 
 export const fallbackThemeConfig: ThemeConfig = {
-    name: 'default-dark',
-    colors: colors['default-dark'],
+    name: 'amthyst-dark',
+    colors: colors['amethyst-dark'],
 };
