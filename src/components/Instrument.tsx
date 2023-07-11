@@ -14,7 +14,6 @@ import { Element } from '../types';
 import { ToggleInput } from './Input';
 import { setMenu } from '../redux/workspace/contextMenuSlice';
 import { ElementMenu } from './contextmenu/ElementMenu';
-import 'tippy.js/dist/tippy.css';
 
 interface InstrumentFrameProps {
     name: string;
@@ -165,26 +164,22 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 </div>
                 <div className="px-4 py-1.5 flex gap-3 items-center">
                     <h4 className="font-medium">{name}</h4>
-                    <ToggleInput tooltip="Toggle Interaction Mode" onClick={() => setInteractable(!interactable)} />
-
+                    <Tippy content="Toggle Interaction Mode" appendTo={document.body}>
+                        <ToggleInput onClick={() => setInteractable(!interactable)} />
+                    </Tippy>
                     <Tippy content="Refresh Instrument" appendTo={document.body}>
                         <button className="ml-auto" onClick={refresh}>
                             <HiRefresh className="cursor-pointer active:text-silver-500" size={22} />
                         </button>
                     </Tippy>
-
-                    <ToggleInput tooltip="Toggle Auto-Refresh" onClick={handleWatch} />
+                    <Tippy content="Toggle Auto-Refresh" appendTo={document.body}>
+                        <ToggleInput onClick={handleWatch} />
+                    </Tippy>
                 </div>
             </div>
-            <div className="absolute w-full h-full box-content border-2 border-silver-700 bg-black">
+            <div className={classNames('absolute w-full h-full box-content border-2 border-silver-700 bg-black', { 'pointer-events-none': !interactable })}>
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
-            <div
-                className={classNames(
-                    'absolute w-full h-full box-content border-2 border-silver-700 bg-transparent',
-                    { 'pointer-events-none': interactable },
-                )}
-            />
         </div>
     );
 };
