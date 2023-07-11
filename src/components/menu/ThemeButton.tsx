@@ -56,8 +56,18 @@ export const ThemeButton: React.FC<ThemeButtonProps> = ({ themeName, title, clas
     );
 };
 
-export const themeButtons = themes.map((theme) => ({
-    themeName: theme.name,
-    title: theme.name.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-    className: 'hover:font-semibold',
-}));
+export const themeButtons = themes.map((theme) => {
+    let title;
+
+    if (theme.name.includes('flybywire')) {
+        title = 'FlyByWire';
+    } else {
+        title = theme.name.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
+
+    return {
+        themeName: theme.name,
+        title,
+        className: 'hover:font-semibold',
+    };
+});
