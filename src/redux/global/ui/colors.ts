@@ -13,7 +13,7 @@ export default {
     'amethyst-dark': {
         primary: '#B47EFA',
         secondary: '#9F59F8',
-        text: '#ffffff',
+        text: '#FFFFFF',
         padding: '#202028',
         workspacePadding: '#3B3B44',
         background: '#111217',
