@@ -1,5 +1,6 @@
 use discord_rich_presence::activity::{Activity, Timestamps};
 use discord_rich_presence::{DiscordIpc, DiscordIpcClient};
+use log::{error, info};
 use std::ops::DerefMut;
 use std::sync::RwLock;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -10,8 +11,14 @@ impl DiscordClient {
     pub fn new() -> Self {
         let mut discord = DiscordIpcClient::new("1046278806685622302").unwrap();
         let ipc = match discord.connect() {
-            Ok(_) => Some(discord),
-            Err(_) => None,
+            Ok(_) => {
+                info!("Connected to Discord IPC");
+                Some(discord)
+            }
+            Err(err) => {
+                error!("{err}");
+                None
+            }
         };
 
         let client = DiscordClient(RwLock::new(ipc));

@@ -1,4 +1,5 @@
 use crate::project::ActiveProject;
+use log::{error, info};
 use matchit::Router;
 use std::error::Error;
 use std::fs;
@@ -27,6 +28,7 @@ pub enum ResourceType {
 }
 
 pub fn handle_ace_request(app: &AppHandle<Wry>, req: &Request) -> Result<Response, Box<dyn Error>> {
+    info!("{} {}", req.method(), req.uri());
     let resource_router = app.state::<ResourceRouter>().inner();
     let active_project = app.state::<ActiveProject>().inner();
 
@@ -52,22 +54,29 @@ pub fn handle_ace_request(app: &AppHandle<Wry>, req: &Request) -> Result<Respons
                     .join(project.config.paths.html_ui.as_path())
                     .join(matched.params.get("path").unwrap()),
             };
+            info!("Resolved to {:?} {}", matched.value, file_path.display());
             match fs::read(file_path) {
                 Ok(data) => ResponseBuilder::new()
                     .status(200)
                     .header("Access-Control-Allow-Origin", "*")
                     .body(data)
                     .unwrap(),
-                Err(_) => ResponseBuilder::new()
-                    .status(404)
-                    .body("Unknown path".as_bytes().to_vec())
-                    .unwrap(),
+                Err(err) => {
+                    error!("{err}");
+                    ResponseBuilder::new()
+                        .status(404)
+                        .body("Unknown path".as_bytes().to_vec())
+                        .unwrap()
+                }
             }
         }
-        Err(_) => ResponseBuilder::new()
-            .status(404)
-            .body("Unknown path".as_bytes().to_vec())
-            .unwrap(),
+        Err(err) => {
+            error!("{err}");
+            ResponseBuilder::new()
+                .status(404)
+                .body("Unknown path".as_bytes().to_vec())
+                .unwrap()
+        }
     };
 
     Ok(response)

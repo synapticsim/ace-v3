@@ -9,6 +9,7 @@ import { Home } from './pages/Home';
 import { Workspace } from './pages/Workspace';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/space-grotesk';
+import 'tippy.js/dist/tippy.css';
 import './index.css';
 import { AppearanceSettings, SettingsMenu } from './pages/Settings';
 
