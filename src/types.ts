@@ -8,8 +8,8 @@ export interface Element {
     height: number;
     x: number;
     y: number;
-    onMouseEnter: () => void;
-    onMouseLeave: () => void;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
 }
 
 export interface AceConfig {
