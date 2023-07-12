@@ -54,10 +54,10 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                 )}
             />
         );
-    }),
-);
+    },
+));
 
-export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width, height }) => {
+export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width, height, onMouseEnter, onMouseLeave }) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -122,7 +122,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 element={{ uuid, name, element, x, y, width, height }}
                 x={e.clientX}
                 y={e.clientY}
-            />
+            />,
         ))
     ), [dispatch]);
 
@@ -152,6 +152,8 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                 width,
                 height,
             }}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
         >
             <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-silver-800 bg-silver-800 rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
