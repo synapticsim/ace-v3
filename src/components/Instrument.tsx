@@ -22,8 +22,8 @@ interface InstrumentFrameProps {
     ref: Ref<HTMLIFrameElement>;
 }
 
-const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(
-    forwardRef(({ name, width, height }, ref: ForwardedRef<HTMLIFrameElement>) => {
+const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
+    ({ name, width, height }, ref: ForwardedRef<HTMLIFrameElement>) => {
         const platform = useGlobalSelector((state: GlobalState) => state.config.platform);
 
         const baseUrl = useMemo(() => (platform === 'win32' ? 'https://ace.localhost' : 'ace://localhost'), [platform]);
@@ -102,29 +102,29 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
         }
     }, [iframeRef, setupInstrument]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleWatch = useCallback(
-        async (event: React.MouseEvent<HTMLInputElement>) => {
-            if (event.currentTarget.checked) {
-                invoke('watch', { instrument: name }).catch(console.error);
-                reloadUnlisten.current = await listen<string>('reload', (e) => {
-                    if (e.payload === name) {
-                        refresh();
-                    }
-                });
-            } else {
-                invoke('unwatch', { instrument: name }).catch(console.error);
-                reloadUnlisten.current?.();
-            }
-        },
-        [name, refresh],
-    );
+    const handleWatch = useCallback(async (event: React.MouseEvent<HTMLInputElement>) => {
+        if (event.currentTarget.checked) {
+            invoke('watch', { instrument: name }).catch(console.error);
+            reloadUnlisten.current = await listen<string>('reload', (e) => {
+                if (e.payload === name) {
+                    refresh();
+                }
+            });
+        } else {
+            invoke('unwatch', { instrument: name }).catch(console.error);
+            reloadUnlisten.current?.();
+        }
+    }, [name, refresh]);
 
-    const handleElementMenu = useCallback(
-        (e: React.MouseEvent) => {
-            dispatch(setMenu(<ElementMenu element={{ uuid, name, element, x, y, width, height }} x={e.clientX} y={e.clientY} />));
-        },
-        [dispatch],
-    );
+    const handleElementMenu = useCallback((e: React.MouseEvent) => (
+        dispatch(setMenu(
+            <ElementMenu
+                element={{ uuid, name, element, x, y, width, height }}
+                x={e.clientX}
+                y={e.clientY}
+            />
+        ))
+    ), [dispatch]);
 
     useEffect(() => {
         if (iframeRef.current) {
@@ -177,7 +177,12 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                     </Tippy>
                 </div>
             </div>
-            <div className={classNames('absolute w-full h-full box-content border-2 border-silver-700 bg-black', { 'pointer-events-none': !interactable })}>
+            <div
+                className={classNames(
+                    'absolute w-full h-full box-content border-2 border-silver-700 bg-black',
+                    { 'pointer-events-none': !interactable },
+                )}
+            >
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>
