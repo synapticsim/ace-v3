@@ -85,8 +85,6 @@ const CanvasLayer: React.FC = () => {
 
     const [transformDisabled, setTransformDisabled] = useState(false);
 
-    const dndContext = useDndContext();
-
     return (
         <TransformWrapper
             disabled={transformDisabled}
