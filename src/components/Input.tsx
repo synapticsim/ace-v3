@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, useCallback, useState } from 'react';
+import React, { forwardRef, InputHTMLAttributes, useCallback, useState } from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
 import classNames from 'classnames';
 import { open, OpenDialogOptions } from '@tauri-apps/api/dialog';
@@ -68,23 +68,23 @@ export const FileInput: React.FC<FileInputProps> = ({ options, onFileSelect, ...
     );
 };
 
-export const SliderInput: React.FC<SliderProps> = ({ ...props }) => (
-    <Slider {...props} />
-);
+export const SliderInput: React.FC<SliderProps> = ({ ...props }) => <Slider {...props} />;
 
-export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => (
-    <div className="relative w-10 h-5">
-        <input
-            type="checkbox"
-            className={classNames('opacity-0 w-full h-full cursor-pointer peer', className)}
-            {...props}
-        />
-        <div className="absolute top-0 left-0 w-full h-full rounded-full bg-silver-700 pointer-events-none" />
-        <div
-            className={classNames(
-                'absolute top-1 left-1 w-3 h-3 rounded-full bg-silver-600 duration-100 pointer-events-none',
-                'peer-checked:bg-amethyst-400 peer-checked:left-6',
-            )}
-        />
-    </div>
+export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = forwardRef(
+    ({ className, ...props }, ref: React.ForwardedRef<HTMLDivElement>) => (
+        <div className="relative w-10 h-5" ref={ref}>
+            <input
+                type="checkbox"
+                className={classNames('opacity-0 w-full h-full cursor-pointer peer', className)}
+                {...props}
+            />
+            <div className="absolute top-0 left-0 w-full h-full rounded-full bg-silver-700 pointer-events-none" />
+            <div
+                className={classNames(
+                    'absolute top-1 left-1 w-3 h-3 rounded-full bg-silver-600 duration-100 pointer-events-none',
+                    'peer-checked:bg-amethyst-400 peer-checked:left-6',
+                )}
+            />
+        </div>
+    )
 );
