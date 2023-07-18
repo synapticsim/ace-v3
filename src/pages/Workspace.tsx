@@ -85,9 +85,11 @@ const CanvasLayer: React.FC = () => {
 
     const [transformDisabled, setTransformDisabled] = useState(false);
 
+    const dndContext = useDndContext();
+
     return (
         <TransformWrapper
-            disabled={transformDisabled}
+            disabled={transformDisabled || dndContext.active !== null}
             centerOnInit
             minScale={0.25}
             initialScale={0.5}
