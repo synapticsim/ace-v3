@@ -90,11 +90,13 @@ const CanvasLayer: React.FC = () => {
     const project = useWorkspaceSelector((state: WorkspaceState) => state.project.active);
     const dispatch = useWorkspaceDispatch();
 
+    const [transformDisabled, setTransformDisabled] = useState(false);
+
     const dndContext = useDndContext();
 
     return (
         <TransformWrapper
-            disabled={dndContext.active !== null}
+            disabled={transformDisabled || dndContext.active !== null}
             centerOnInit
             minScale={0.25}
             initialScale={0.5}
@@ -119,7 +121,11 @@ const CanvasLayer: React.FC = () => {
                     }}
                 >
                     {project?.config.elements?.map((props) => (
-                        <Instrument {...props} />
+                        <Instrument
+                            {...props}
+                            onMouseEnter={() => setTransformDisabled(true)}
+                            onMouseLeave={() => setTransformDisabled(false)}
+                        />
                     ))}
                 </div>
             </TransformComponent>
