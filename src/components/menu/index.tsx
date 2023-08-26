@@ -42,7 +42,7 @@ interface MenuBodyProps {
 
 export const MenuBody: React.FC<MenuBodyProps> = ({ title, onExit, className, children }) => (
     <div className={classNames('w-[26rem] bg-midnight-800 shadow-2xl rounded-2xl z-30 overflow-hidden', className)}>
-        <div className="px-6 py-4 bg-midnight-700 flex justify-between items-center">
+        <div className="px-6 py-4 pt-8 bg-midnight-700 flex justify-between items-center">
             <h4 className="font-medium">{title}</h4>
             <button onClick={onExit}>
                 <FiX size={30} className="text-midnight-400" />
