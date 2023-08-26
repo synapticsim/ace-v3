@@ -4,6 +4,10 @@ import { Coherent } from './shims/Coherent';
 import { GetStoredData, SetStoredData } from './shims/StoredData';
 import { Avionics, BaseInstrument, GameState, LaunchFlowEvent, registerInstrument, RunwayDesignator } from './shims/MsfsSdk';
 
+type CustomEventMap = {
+    [key in 'triggerInteractionEvent']: CustomEvent<string>;
+};
+
 declare global {
     interface Window {
         aceFetch: typeof aceFetch;
@@ -20,5 +24,11 @@ declare global {
         GameState: typeof GameState;
         Avionics: typeof Avionics;
         LaunchFlowEvent: typeof LaunchFlowEvent;
+
+        handleInteractionEventRegister: (key: string) => void;
+
+        addEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void;
+        removeEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void;
+        dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K]): void;
     }
 }

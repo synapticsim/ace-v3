@@ -62,6 +62,7 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                                 window.GameState = window.parent.GameState;
                                 window.Avionics = window.parent.Avionics;
                                 window.LaunchFlowEvent = window.parent.LaunchFlowEvent;
+                                window.handleInteractionEventRegister = window.parent.handleInteractionEventRegister;
                             </script>
                             <script type="text/javascript" defer crossOrigin="anonymous" src={`${baseUrl}/project/${name}/bundle.js`} />
                             <link rel="stylesheet" href={`${baseUrl}/project/${name}/bundle.css`} />
@@ -71,6 +72,20 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                                 <div id="MSFS_REACT_MOUNT" />
                             </div>
                         </body>
+
+                        {/* We just, have to do this to intercept event listeners being added... try not to think about it */}
+                        {/* eslint-disable-next-line react/no-danger */}
+                        <script dangerouslySetInnerHTML={{
+                            __html: `
+                            const rootElement = document.getElementById('ROOT_ELEMENT');
+                            const originalFunc = rootElement.addEventListener;
+                            
+                            rootElement.addEventListener=(type, callback)=>{
+                                window.handleInteractionEventRegister(type);
+                                originalFunc.apply(rootElement, [type, callback]);
+                            };`,
+                        }}
+                        />
                     </html>,
                 )}
             />
@@ -157,6 +172,16 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
 
     // Clean up reload event listener on unmount
     useEffect(() => () => reloadUnlisten.current?.(), []);
+
+    useEffect(() => {
+        const callback = (event: CustomEvent<string>) => {
+            iframeRef.current?.contentDocument?.getElementById('ROOT_ELEMENT')?.dispatchEvent(new CustomEvent(event.detail));
+        };
+
+        window.addEventListener('triggerInteractionEvent', callback);
+
+        return () => window.removeEventListener('triggerInteractionEvent', callback);
+    }, []);
 
     return (
         <div
