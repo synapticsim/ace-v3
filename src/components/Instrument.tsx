@@ -62,7 +62,6 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                                 window.GameState = window.parent.GameState;
                                 window.Avionics = window.parent.Avionics;
                                 window.LaunchFlowEvent = window.parent.LaunchFlowEvent;
-                                window.handleInteractionEventRegister = window.parent.handleInteractionEventRegister;
                             </script>
                             <script type="text/javascript" defer crossOrigin="anonymous" src={`${baseUrl}/project/${name}/bundle.js`} />
                             <link rel="stylesheet" href={`${baseUrl}/project/${name}/bundle.css`} />
@@ -81,7 +80,7 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                             const originalFunc = rootElement.addEventListener;
                             
                             rootElement.addEventListener=(type, callback)=>{
-                                window.handleInteractionEventRegister(type);
+                                window.parent.handleInteractionEventRegister(type);
                                 originalFunc.apply(rootElement, [type, callback]);
                             };`,
                         }}
