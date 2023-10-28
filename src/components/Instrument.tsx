@@ -161,7 +161,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
     return (
         <div
             ref={containerRef}
-            className="absolute shadow-2xl"
+            className={classNames('absolute shadow-2xl', { 'pointer-events-none': !interactable })}
             onContextMenu={handleElementMenu}
             style={{
                 opacity: isDragging ? 0.5 : 1,
@@ -173,7 +173,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         >
-            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-silver-800 bg-silver-800 rounded-t-xl">
+            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-silver-800 bg-silver-800 rounded-t-xl pointer-events-auto">
                 <div className="absolute -top-0.5 w-full flex justify-center">
                     <span
                         className="w-1/4 h-2 bg-silver-700 rounded-b-full outline-0"
@@ -197,12 +197,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                     </Tippy>
                 </div>
             </div>
-            <div
-                className={classNames(
-                    'absolute w-full h-full box-content border-2 border-silver-700 bg-black',
-                    { 'pointer-events-none': !interactable },
-                )}
-            >
+            <div className="absolute w-full h-full box-content border-2 border-silver-700 bg-black">
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>
