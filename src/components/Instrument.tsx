@@ -70,21 +70,10 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                             <div id="ROOT_ELEMENT">
                                 <div id="MSFS_REACT_MOUNT" />
                             </div>
+                            <script>
+                                window.parent.registerInteractionEventRegister(window.document);
+                            </script>
                         </body>
-
-                        {/* We just, have to do this to intercept event listeners being added... try not to think about it */}
-                        {/* eslint-disable-next-line react/no-danger */}
-                        <script dangerouslySetInnerHTML={{
-                            __html: `
-                            const rootElement = document.getElementById('ROOT_ELEMENT');
-                            const originalFunc = rootElement.addEventListener;
-                            
-                            rootElement.addEventListener=(type, callback)=>{
-                                window.parent.handleInteractionEventRegister(type);
-                                originalFunc.apply(rootElement, [type, callback]);
-                            };`,
-                        }}
-                        />
                     </html>,
                 )}
             />

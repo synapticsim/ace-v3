@@ -25,7 +25,16 @@ export function installShims(): void {
     window.Avionics = Avionics;
     window.LaunchFlowEvent = LaunchFlowEvent;
 
-    window.handleInteractionEventRegister = (key: string) => {
-        workspaceStore.dispatch(addEvent(key));
+    window.registerInteractionEventRegister = (document: Document) => {
+        const rootElement = document.getElementById('ROOT_ELEMENT');
+        if (!rootElement) {
+            return;
+        }
+
+        const _addEventListener = rootElement.addEventListener;
+        rootElement.addEventListener = (type: string, listener: EventListenerOrEventListenerObject) => {
+            workspaceStore.dispatch(addEvent(type));
+            _addEventListener(type, listener);
+        }
     };
 }

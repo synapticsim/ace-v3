@@ -25,7 +25,7 @@ declare global {
         Avionics: typeof Avionics;
         LaunchFlowEvent: typeof LaunchFlowEvent;
 
-        handleInteractionEventRegister: (key: string) => void;
+        registerInteractionEventRegister: (document: Document) => void;
 
         addEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void;
         removeEventListener<K extends keyof CustomEventMap>(type: K, listener: (this: Document, ev: CustomEventMap[K]) => void): void;
