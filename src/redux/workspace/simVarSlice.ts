@@ -1,6 +1,6 @@
 import { createSlice, Middleware, PayloadAction } from '@reduxjs/toolkit';
 import { invoke } from '@tauri-apps/api/tauri';
-import { SimVar, SimVarType } from '../../types';
+import { Control, ControlType, SimVar, SimVarType } from '../../types';
 
 export function parseSimVarName(name: string): {
     type: SimVarType;
@@ -41,7 +41,12 @@ const simVarSlice = createSlice({
             }
 
             if (!(parsedName.key in state.ids)) {
-                state.ids[parsedName.key] = state.vars.push({ ...parsedName, unit, value }) - 1;
+                state.ids[parsedName.key] = state.vars.push({
+                    ...parsedName,
+                    unit,
+                    value,
+                    control: unit === 'string' ? { type: ControlType.Text } : { type: ControlType.Slider, min: 0, max: 250 },
+                }) - 1;
             }
         },
         setSimVar(state, action: PayloadAction<{ id: number, value: string | number }>) {
@@ -61,6 +66,14 @@ const simVarSlice = createSlice({
                 state.vars[id].pinned = !state.vars[id].pinned;
             }
         },
+        setControl(state, action: PayloadAction<{ key: string, control: Control }>) {
+            const { key, control } = action.payload;
+
+            if (key in state.ids) {
+                const id = state.ids[key];
+                state.vars[id].control = control;
+            }
+        },
     },
 });
 
@@ -68,6 +81,7 @@ export const {
     newSimVar,
     setSimVar,
     togglePin,
+    setControl,
 } = simVarSlice.actions;
 export const simVarsReducer = simVarSlice.reducer;
 

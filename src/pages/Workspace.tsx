@@ -13,6 +13,7 @@ import { SimVarsMenu } from '../components/menu/SimVarsMenu';
 import { CanvasMenu } from '../components/contextmenu/CanvasMenu';
 import { ElementsMenu } from '../components/menu/ElementsMenu';
 import { InstrumentConfig, SimVar } from '../types';
+import { EventsMenu } from '../components/menu/EventsMenu';
 
 export const CANVAS_WIDTH = 12000;
 export const CANVAS_HEIGHT = 5000;
@@ -20,6 +21,7 @@ export const CANVAS_HEIGHT = 5000;
 enum MenuTabs {
     SimVars,
     Elements,
+    Events,
 }
 
 export const Workspace: React.FC = () => {
@@ -70,6 +72,11 @@ export const Workspace: React.FC = () => {
                 <ElementsMenu
                     show={currentMenuTab === MenuTabs.Elements}
                     onClick={() => setMenuTab(MenuTabs.Elements)}
+                    onExit={() => setMenuTab(undefined)}
+                />
+                <EventsMenu
+                    show={currentMenuTab === MenuTabs.Events}
+                    onClick={() => setMenuTab(MenuTabs.Events)}
                     onExit={() => setMenuTab(undefined)}
                 />
             </div>

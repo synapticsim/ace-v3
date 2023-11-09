@@ -70,6 +70,9 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                             <div id="ROOT_ELEMENT">
                                 <div id="MSFS_REACT_MOUNT" />
                             </div>
+                            <script>
+                                window.parent.registerInteractionEventRegister(window.document);
+                            </script>
                         </body>
                     </html>,
                 )}
@@ -157,6 +160,16 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
 
     // Clean up reload event listener on unmount
     useEffect(() => () => reloadUnlisten.current?.(), []);
+
+    useEffect(() => {
+        const callback = (event: CustomEvent<string>) => {
+            iframeRef.current?.contentDocument?.getElementById('ROOT_ELEMENT')?.dispatchEvent(new CustomEvent(event.detail));
+        };
+
+        window.addEventListener('triggerInteractionEvent', callback);
+
+        return () => window.removeEventListener('triggerInteractionEvent', callback);
+    }, []);
 
     return (
         <div

@@ -25,13 +25,14 @@
         @apply bg-amethyst-400/50;
     }
 
-    .rc-slider-handle, .rc-slider-handle:hover {
-        @apply opacity-100 border-2 border-amethyst-400 bg-silver-800
-            ring-0 !ring-opacity-50 ring-amethyst-400
-            transition-shadow duration-300;
+    .rc-slider-handle,
+    .rc-slider-handle:hover {
+        @apply opacity-100 border-2 border-amethyst-400 bg-silver-800 ring-0 !ring-opacity-50 ring-amethyst-400 transition-shadow duration-300;
     }
 
-    .rc-slider-handle-dragging, .rc-slider-handle:focus-visible, .rc-slider-handle:active {
+    .rc-slider-handle-dragging,
+    .rc-slider-handle:focus-visible,
+    .rc-slider-handle:active {
         @apply !border-amethyst-400 !shadow-none ring-4 ring-amethyst-400;
     }
 
@@ -48,18 +49,25 @@
     }
 
     .titlebar-controls button {
-        @apply flex justify-center items-center w-8 h-8
-            fill-none stroke-white stroke-2
-            disabled:stroke-silver-600 hover:bg-silver-800 disabled:hover:bg-transparent
-            transition-colors duration-150;
+        @apply flex justify-center items-center w-8 h-8 fill-none stroke-white stroke-2 disabled:stroke-silver-600 hover:bg-silver-800 disabled:hover:bg-transparent transition-colors duration-150;
 
         stroke-linecap: round;
         stroke-linejoin: round;
     }
-}
 
-.bg-grid {
-    background-size: 20px 20px;
-    background-image: radial-gradient(#202028 1.25px, transparent 0);
-    background-position: -9px -9px;
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    select {
+        @apply bg-transparent border-2 border-silver-600 rounded-md
+    }
+
+    .bg-grid {
+        background-size: 20px 20px;
+        background-image: radial-gradient(#202028 1.25px, transparent 0);
+        background-position: -9px -9px;
+    }
 }

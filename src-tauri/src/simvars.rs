@@ -11,6 +11,14 @@ enum SimVarType {
     L,
 }
 
+#[derive(Deserialize, Serialize)]
+#[serde(tag = "type")]
+enum Control {
+    Numeric,
+    Text,
+    Slider { min: f64, max: f64 },
+}
+
 enum SimVarValue {
     String(String),
     Number(f64),
@@ -90,7 +98,7 @@ pub struct SimVar {
     index: u8,
     unit: String,
     value: SimVarValue,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    control: Control,
     pinned: Option<bool>,
 }
 

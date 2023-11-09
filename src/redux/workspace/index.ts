@@ -4,11 +4,13 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { simVarsReducer, writeSimVarConfigMiddleware } from './simVarSlice';
 import { contextMenuReducer } from './contextMenuSlice';
 import { projectReducer, updateElementsMiddleware } from './projectSlice';
+import { interactionEventsReducer } from './interactionEventsSlice';
 
 const workspaceReducer = combineReducers({
     simVars: simVarsReducer,
     contextMenu: contextMenuReducer,
     project: projectReducer,
+    interactionEvents: interactionEventsReducer,
 });
 
 export const workspaceStore = configureStore({
