@@ -34,7 +34,8 @@ export function installShims(): void {
         const _addEventListener = rootElement.addEventListener;
         rootElement.addEventListener = (type: string, listener: EventListenerOrEventListenerObject) => {
             workspaceStore.dispatch(addEvent(type));
-            _addEventListener(type, listener);
-        }
+
+            _addEventListener.apply(rootElement, [type, listener]);
+        };
     };
 }
