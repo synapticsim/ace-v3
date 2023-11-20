@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
-use std::sync::RwLock;
 use crate::simvars::SimVarStore;
+use std::sync::RwLock;
 use wasm_bindgen::prelude::*;
 
 extern crate console_error_panic_hook;

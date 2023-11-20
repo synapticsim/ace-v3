@@ -1,15 +1,15 @@
-use crate::SimulatorShim;
+use crate::simvars::types::SimVarType;
 use crate::simvars::units::SimVarUnit;
 use crate::simvars::values::SimVarValue;
+use crate::SimulatorShim;
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::simvars::types::SimVarType;
 
 #[wasm_bindgen]
 impl SimulatorShim {
     pub fn gauge__aircraft_varget(&self, var_id: usize, unit_id: usize, index: usize) -> f64 {
         log::debug!("gauge__aircraft_varget :: var_id={var_id}, unit_id={unit_id}, index={index}");
 
-        let simvar_guard  = self.simvars.read().unwrap();
+        let simvar_guard = self.simvars.read().unwrap();
 
         let unit = simvar_guard
             .get_unit(&unit_id)
@@ -28,7 +28,10 @@ impl SimulatorShim {
     pub fn gauge__get_aircraft_var_enum(&mut self, name: &str) -> usize {
         log::debug!("gauge__get_aircraft_var_enum :: name={name}");
 
-        self.simvars.write().unwrap().register_wasm_var(SimVarType::A, name)
+        self.simvars
+            .write()
+            .unwrap()
+            .register_wasm_var(SimVarType::A, name)
     }
 
     pub fn gauge__get_named_variable_value(&self, id: usize) -> f64 {
@@ -56,13 +59,18 @@ impl SimulatorShim {
     pub fn gauge__register_named_variable(&mut self, name: &str) -> usize {
         log::debug!("gauge__register_named_variable :: name={name}");
 
-        self.simvars.write().unwrap().register_wasm_var(SimVarType::L, name)
+        self.simvars
+            .write()
+            .unwrap()
+            .register_wasm_var(SimVarType::L, name)
     }
 
     pub fn gauge__set_named_variable_value(&mut self, id: usize, value: f64) {
         log::debug!("gauge__register_named_variable :: id={id}, value={value}");
 
-        self.simvars.write().unwrap()
+        self.simvars
+            .write()
+            .unwrap()
             .set_wasm_var(&id, &SimVarUnit::Number, None, SimVarValue::Number(value))
             .expect("Attempted to write un-registered variable");
     }
@@ -72,7 +80,7 @@ impl SimulatorShim {
             "gauge__set_named_variable_typed_value :: id={id}, value={value}, unit_id={unit_id}"
         );
 
-        let mut simvar_guard  = self.simvars.write().unwrap();
+        let mut simvar_guard = self.simvars.write().unwrap();
 
         let unit = simvar_guard
             .get_unit(&unit_id)

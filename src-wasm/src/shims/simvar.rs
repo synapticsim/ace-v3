@@ -1,5 +1,5 @@
-use crate::SimulatorShim;
 use crate::simvars::values::SimVarValue;
+use crate::SimulatorShim;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
