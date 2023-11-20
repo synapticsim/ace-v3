@@ -10,18 +10,18 @@ macro_rules! units {
         #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
         pub enum SimVarUnit {
             Number,
-            Bool,
+            String,
             $($name(uom::si::$uom_quantity::Units),)+
         }
 
         impl From<&str> for SimVarUnit {
             fn from(value: &str) -> Self {
                 match value {
-                    "number" | "numbers" | "enum" => Self::Number,
-                    "bool" | "boolean" => Self::Bool,
                     $($(
                         $($patterns)* => Self::$name(uom::si::$uom_quantity::Units::$uom_unit(uom::si::$uom_quantity::$uom_unit)),
                     )+)+
+                    "number" | "numbers" | "enum" | "bool" | "boolean" => Self::Number,
+                    "string" => Self::String,
                     _ => panic!("Unsupported unit: {value}"),
                 }
             }
@@ -30,32 +30,34 @@ macro_rules! units {
         impl SimVarUnit {
             pub fn from_base(&self, value: f64) -> f64 {
                 let (coefficient, constant) = match self {
-                    Self::Number | Self::Bool => return value,
                     $($(
                         Self::$name(uom::si::$uom_quantity::Units::$uom_unit(_)) => (
                             <uom::si::$uom_quantity::$uom_unit as uom::Conversion<f64>>::coefficient(),
                             <uom::si::$uom_quantity::$uom_unit as uom::Conversion<f64>>::constant(uom::ConstantOp::Sub)
                         ),
                     )+)+
+                    Self::Number => return value,
+                    Self::String => panic!("from_base is not supported for String types"),
                     _ => unreachable!(),
                 };
 
-                coefficient / value - constant
+                value / coefficient - constant
             }
 
             pub fn to_base(&self, value: f64) -> f64 {
                 let (coefficient, constant) = match self {
-                    Self::Number | Self::Bool => return value,
                     $($(
                         Self::$name(uom::si::$uom_quantity::Units::$uom_unit(_)) => (
                             <uom::si::$uom_quantity::$uom_unit as uom::Conversion<f64>>::coefficient(),
                             <uom::si::$uom_quantity::$uom_unit as uom::Conversion<f64>>::constant(uom::ConstantOp::Add)
                         ),
                     )+)+
+                    Self::Number => return value,
+                    Self::String => panic!("to_base is not supported for String types"),
                     _ => unreachable!(),
                 };
 
-                coefficient * value + constant
+                value * coefficient + constant
             }
         }
     );

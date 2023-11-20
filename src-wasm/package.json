@@ -1,0 +1,12 @@
+{
+  "name": "src-wasm",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "wasm-pack test --node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/synapticsim/ace-v3.git"
+  },
+  "private": true
+}

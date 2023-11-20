@@ -72,7 +72,7 @@ units! {
     Acceleration as acceleration {
         "meter per second squared" | "meters per second squared" => meter_per_second_squared,
         "feet per second squared" | "foot per second squared" => foot_per_second_squared,
-        "gforce" | "g Force" => standard_gravity,
+        "gforce" | "g force" => standard_gravity,
     },
     Time as time {
         "second" | "seconds" => second,
