@@ -39,11 +39,26 @@ export interface InstrumentConfig {
 
 export type SimVarType = 'A' | 'E' | 'L';
 
+export enum ControlType {
+    Numeric = 'Numeric',
+    Slider = 'Slider',
+    Text = 'Text',
+}
+
+export type Control = {
+    type: ControlType.Numeric | ControlType.Text;
+} | {
+    type: ControlType.Slider;
+    min: number;
+    max: number;
+}
+
 export interface SimVar {
     type: SimVarType;
     name: string;
     index: number;
     unit: string;
     value: string | number;
+    control: Control;
     pinned?: boolean;
 }

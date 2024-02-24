@@ -3,43 +3,39 @@ import { Coherent } from './Coherent';
 import { GetStoredData, SetStoredData } from './StoredData';
 import { Avionics, BaseInstrument, GameState, LaunchFlowEvent, registerInstrument, RunwayDesignator } from './MsfsSdk';
 import { aceFetch } from './fetch';
+import { workspaceStore } from '../redux/workspace';
+import { addEvent } from '../redux/workspace/interactionEventsSlice';
 
-interface InstrumentContentWindow extends Window {
-    ACE_ENGINE_HANDLE: boolean;
+export function installShims(): void {
+    // JS built-ins shims
+    window.aceFetch = aceFetch;
 
-    fetch: typeof aceFetch;
+    // MSFS global shims
+    window.SimVar = SimVar;
+    window.Coherent = Coherent;
+    window.GetStoredData = GetStoredData;
+    window.SetStoredData = SetStoredData;
 
-    SimVar: typeof SimVar;
-    Coherent: typeof Coherent;
-    GetStoredData: typeof GetStoredData;
-    SetStoredData: typeof SetStoredData;
+    // MSFS Avionics Framework global shims
+    window.simvar = simvar;
+    window.BaseInstrument = BaseInstrument;
+    window.registerInstrument = registerInstrument;
+    window.RunwayDesignator = RunwayDesignator;
+    window.GameState = GameState;
+    window.Avionics = Avionics;
+    window.LaunchFlowEvent = LaunchFlowEvent;
 
-    simvar: typeof simvar;
-    BaseInstrument: typeof BaseInstrument;
-    registerInstrument: typeof registerInstrument;
-    RunwayDesignator: typeof RunwayDesignator;
-    GameState: typeof GameState;
-    Avionics: typeof Avionics;
-    LaunchFlowEvent: typeof LaunchFlowEvent;
-}
+    window.registerInteractionEventRegister = (document: Document) => {
+        const rootElement = document.getElementById('ROOT_ELEMENT');
+        if (!rootElement) {
+            return;
+        }
 
-export function installShims(window: Window): void {
-    const instrument = window as InstrumentContentWindow;
+        const _addEventListener = rootElement.addEventListener;
+        rootElement.addEventListener = (type: string, listener: EventListenerOrEventListenerObject) => {
+            workspaceStore.dispatch(addEvent(type));
 
-    instrument.ACE_ENGINE_HANDLE = true;
-
-    instrument.fetch = aceFetch;
-
-    instrument.SimVar = SimVar;
-    instrument.Coherent = Coherent;
-    instrument.GetStoredData = GetStoredData;
-    instrument.SetStoredData = SetStoredData;
-
-    instrument.simvar = simvar;
-    instrument.BaseInstrument = BaseInstrument;
-    instrument.registerInstrument = registerInstrument;
-    instrument.RunwayDesignator = RunwayDesignator;
-    instrument.GameState = GameState;
-    instrument.Avionics = Avionics;
-    instrument.LaunchFlowEvent = LaunchFlowEvent;
+            _addEventListener.apply(rootElement, [type, listener]);
+        };
+    };
 }

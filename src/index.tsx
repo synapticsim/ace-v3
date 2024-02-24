@@ -7,6 +7,7 @@ import { globalStore, GlobalStoreContext } from './redux/global';
 import { workspaceStore, WorkspaceStoreContext } from './redux/workspace';
 import { Home } from './pages/Home';
 import { Workspace } from './pages/Workspace';
+import { installShims } from './shims';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/space-grotesk';
 import 'tippy.js/dist/tippy.css';
@@ -22,6 +23,8 @@ document
 document
     .getElementById('titlebar-close')!
     .addEventListener('click', () => appWindow.close());
+
+installShims();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>

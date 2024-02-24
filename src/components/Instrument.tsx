@@ -9,7 +9,6 @@ import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { useDraggable } from '@dnd-kit/core';
 import { GlobalState, useGlobalSelector } from '../redux/global';
 import { useWorkspaceDispatch, useWorkspaceSelector, WorkspaceState } from '../redux/workspace';
-import { installShims } from '../shims';
 import { Element } from '../types';
 import { ToggleInput } from './Input';
 import { setMenu } from '../redux/workspace/contextMenuSlice';
@@ -42,6 +41,28 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                     <html>
                         <head>
                             <title>{name}</title>
+                            <script>
+                                /* Backwards compatibility with ACE v2 */
+                                window.ACE_ENGINE_HANDLE = true;
+
+                                /* JS built-ins shims */
+                                window.fetch = window.parent.aceFetch;
+
+                                /* MSFS global shims */
+                                window.SimVar = window.parent.SimVar;
+                                window.Coherent = window.parent.Coherent;
+                                window.GetStoredData = window.parent.GetStoredData;
+                                window.SetStoredData = window.parent.SetStoredData;
+
+                                /* MSFS Avionics Framework global shims */
+                                window.simvar = window.parent.simvar;
+                                window.BaseInstrument = window.parent.BaseInstrument;
+                                window.registerInstrument = window.parent.registerInstrument;
+                                window.RunwayDesignator = window.parent.RunwayDesignator;
+                                window.GameState = window.parent.GameState;
+                                window.Avionics = window.parent.Avionics;
+                                window.LaunchFlowEvent = window.parent.LaunchFlowEvent;
+                            </script>
                             <script type="text/javascript" defer crossOrigin="anonymous" src={`${baseUrl}/project/${name}/bundle.js`} />
                             <link rel="stylesheet" href={`${baseUrl}/project/${name}/bundle.css`} />
                         </head>
@@ -49,6 +70,9 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                             <div id="ROOT_ELEMENT">
                                 <div id="MSFS_REACT_MOUNT" />
                             </div>
+                            <script>
+                                window.parent.registerInteractionEventRegister(window.document);
+                            </script>
                         </body>
                     </html>,
                 )}
@@ -82,7 +106,6 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
 
         const iframe = iframeRef.current;
         if (iframe && iframe.contentWindow) {
-            installShims(iframe.contentWindow);
             updateInterval.current = window.setInterval(() => (
                 iframe.contentDocument
                     ?.getElementById('ROOT_ELEMENT')
@@ -95,12 +118,10 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
         const iframe = iframeRef.current;
         if (iframe && iframe.contentWindow) {
             iframe.contentWindow.location.reload();
-            window.setTimeout(() => {
-                setupInstrument();
-                console.info(`[${projectName}] Reloaded instrument ${name}`);
-            }, 10);
+            setupInstrument();
+            console.info(`[${projectName}] Reloaded instrument ${name}`);
         }
-    }, [iframeRef, setupInstrument]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [iframeRef, setupInstrument]);
 
     const handleWatch = useCallback(async (event: React.MouseEvent<HTMLInputElement>) => {
         if (event.currentTarget.checked) {
@@ -140,10 +161,20 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
     // Clean up reload event listener on unmount
     useEffect(() => () => reloadUnlisten.current?.(), []);
 
+    useEffect(() => {
+        const callback = (event: CustomEvent<string>) => {
+            iframeRef.current?.contentDocument?.getElementById('ROOT_ELEMENT')?.dispatchEvent(new CustomEvent(event.detail));
+        };
+
+        window.addEventListener('triggerInteractionEvent', callback);
+
+        return () => window.removeEventListener('triggerInteractionEvent', callback);
+    }, []);
+
     return (
         <div
             ref={containerRef}
-            className="absolute shadow-2xl"
+            className={classNames('absolute shadow-2xl', { 'pointer-events-none': !interactable })}
             onContextMenu={handleElementMenu}
             style={{
                 opacity: isDragging ? 0.5 : 1,

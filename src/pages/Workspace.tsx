@@ -14,6 +14,7 @@ import { CanvasMenu } from '../components/contextmenu/CanvasMenu';
 import { ElementsMenu } from '../components/menu/ElementsMenu';
 import { SettingsMenuCanvas } from '../components/menu/SettingsMenu';
 import { InstrumentConfig, SimVar } from '../types';
+import { EventsMenu } from '../components/menu/EventsMenu';
 
 export const CANVAS_WIDTH = 12000;
 export const CANVAS_HEIGHT = 5000;

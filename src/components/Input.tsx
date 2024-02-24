@@ -1,4 +1,4 @@
-import React, { forwardRef, InputHTMLAttributes, useCallback, useState } from 'react';
+import React, { forwardRef, HTMLProps, InputHTMLAttributes, ReactElement, useCallback, useState } from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
 import classNames from 'classnames';
 import { open, OpenDialogOptions } from '@tauri-apps/api/dialog';
@@ -39,6 +39,57 @@ export const Input: React.FC<InputProps> = ({ label, error, className, ...props 
     </div>
 );
 
+export const NumberInput: React.FC<Omit<InputProps, 'onChange'> & { onChange?: (value: number) => void }> = ({ onChange, label, error, className, ...props }) => (
+    <div className="relative flex flex-col gap-1">
+        {label && <label htmlFor={props.name}>{label}</label>}
+        <input
+            type="number"
+            id={props.name}
+            className={classNames(
+                'px-1 rounded-md bg-transparent outline-0 ring-0 border-2 block',
+                'duration-300 focus:ring-4 focus:ring-opacity-50',
+                { 'border-midnight-600': !error, 'border-red-500': error, 'ring-midnight-600': !error, 'ring-red-500': error },
+                className,
+            )}
+            {...props}
+            onChange={(e) => {
+                onChange?.(parseFloat(e.target.value));
+            }}
+        />
+        {error && (
+            <div className="absolute right-3 bottom-3">
+                <FiAlertCircle size={22} className="peer stroke-red-500" />
+                <span
+                    className={classNames(
+                        'absolute -top-1 left-7 px-2 py-1 bg-red-500 rounded-md opacity-0 pointer-events-none',
+                        'peer-hover:opacity-100 duration-200',
+                    )}
+                >
+                    {error}
+                </span>
+            </div>
+        )}
+    </div>
+);
+
+interface DropdownProps<T> {
+    children: ReactElement<HTMLProps<HTMLOptionElement>>[];
+    onChange: (value: T) => void;
+    value: T;
+}
+
+export const Dropdown = <T extends string | number>({ value, onChange, children }: DropdownProps<T>) => {
+    const onSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        onChange(e.target.value as T);
+    };
+
+    return (
+        <select onChange={onSelect} value={value}>
+            {children}
+        </select>
+    );
+};
+
 interface FileInputProps extends InputProps {
     options: OpenDialogOptions;
     onFileSelect: (path: any) => void;
@@ -68,7 +119,11 @@ export const FileInput: React.FC<FileInputProps> = ({ options, onFileSelect, ...
     );
 };
 
-export const SliderInput: React.FC<SliderProps> = ({ ...props }) => <Slider {...props} />;
+export const SliderInput: React.FC<SliderProps<number>> = ({ ...props }) => (
+    <Slider
+        {...props as SliderProps}
+    />
+);
 
 export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = forwardRef(
     ({ className, ...props }, ref: React.ForwardedRef<HTMLDivElement>) => (
@@ -86,5 +141,5 @@ export const ToggleInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = forw
                 )}
             />
         </div>
-    )
+    ),
 );

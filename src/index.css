@@ -172,7 +172,6 @@
     .border-b-theme-workspace-pd {
         border-bottom-color: var(--workspace-padding-color);
     }
-}
 
 .bg-grid {
     background-size: 20px 20px;
