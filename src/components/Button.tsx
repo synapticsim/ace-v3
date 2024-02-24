@@ -9,7 +9,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button: React.FC<ButtonProps> = ({ loading, className, children, ...props }) => (
     <button
         className={classNames(
-            'px-4 py-2 rounded-md ring-0 ring-opacity-50 ring-inherit',
+            'px-4 py-2 rounded-md ring-0 ring-theme-primary',
             'duration-300 focus:ring-4',
             className,
         )}

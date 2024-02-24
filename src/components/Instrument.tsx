@@ -186,10 +186,10 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         >
-            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-silver-800 bg-silver-800 rounded-t-xl pointer-events-auto">
+            <div className="absolute bottom-full w-full box-content border-2 border-b-0 border-theme-pd bg-theme-pd rounded-t-xl">
                 <div className="absolute -top-0.5 w-full flex justify-center">
                     <span
-                        className="w-1/4 h-2 bg-silver-700 rounded-b-full outline-0"
+                        className="w-1/4 h-2 bg-theme-workspace-pd rounded-b-full outline-0"
                         ref={setNodeRef}
                         {...listeners}
                         {...attributes}
@@ -202,7 +202,7 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                     </Tippy>
                     <Tippy content="Refresh Instrument" appendTo={document.body}>
                         <button className="ml-auto" onClick={refresh}>
-                            <HiRefresh className="cursor-pointer active:text-silver-500" size={22} />
+                            <HiRefresh className="cursor-pointer active:text-theme-pd" size={22} />
                         </button>
                     </Tippy>
                     <Tippy content="Toggle Auto-Refresh" appendTo={document.body}>
@@ -210,7 +210,12 @@ export const Instrument: React.FC<Element> = ({ uuid, name, element, x, y, width
                     </Tippy>
                 </div>
             </div>
-            <div className="absolute w-full h-full box-content border-2 border-silver-700 bg-black">
+            <div
+                className={classNames(
+                    'absolute w-full h-full box-content border-2 border-theme-workspace-pd bg-black',
+                    { 'pointer-events-none': !interactable },
+                )}
+            >
                 <InstrumentFrame ref={iframeRef} name={name} width={width} height={height} />
             </div>
         </div>

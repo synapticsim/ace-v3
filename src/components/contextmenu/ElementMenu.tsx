@@ -18,7 +18,7 @@ export const ElementMenu: React.FC<ElementMenuProps> = ({ element, ...props }) =
 
     return (
         <ContextMenu {...props}>
-            <div className="px-4 py-3 bg-silver-700/50 border-b-2 border-b-silver-700 font-medium">
+            <div className="px-4 py-3 bg-theme-bg border-b-2 border-b-theme-workspace-pd font-medium">
                 {element.name}
             </div>
             <button

@@ -12,6 +12,7 @@ import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/space-grotesk';
 import 'tippy.js/dist/tippy.css';
 import './index.css';
+import { AppearanceSettings, SettingsMenu } from './pages/Settings';
 
 document
     .getElementById('titlebar-minimize')!
@@ -33,6 +34,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                     <Routes>
                         <Route index element={<Home />} />
                         <Route path="/workspace" element={<Workspace />} />
+                        <Route path="/settings" element={<SettingsMenu />} />
                     </Routes>
                 </MemoryRouter>
             </Provider>

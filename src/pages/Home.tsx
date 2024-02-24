@@ -4,6 +4,7 @@ import { open } from '@tauri-apps/api/dialog';
 import { invoke } from '@tauri-apps/api/tauri';
 import { LuFolderOpen, LuPlus } from 'react-icons/lu';
 import { appWindow } from '@tauri-apps/api/window';
+import { MdSettings } from 'react-icons/md';
 import { useWorkspaceDispatch } from '../redux/workspace';
 import { setActive } from '../redux/workspace/projectSlice';
 import { initConfig, pushRecentProject } from '../redux/global/configSlice';
@@ -12,16 +13,33 @@ import { AceProject } from '../types';
 import { Card } from '../components/Card';
 import { NewProjectModal } from '../components/modal/NewProjectModal';
 import { timeFromTimestamp } from '../utils/date';
+import { fallbackThemeConfig } from '../redux/global/ui/uitheme';
 
 export const Home: React.FC = () => {
     const navigate = useNavigate();
     const workspaceDispatch = useWorkspaceDispatch();
     const globalDispatch = useGlobalDispatch<GlobalDispatch>();
 
-    const { version, recentProjects } = useGlobalSelector((state: GlobalState) => ({
+    const { version, recentProjects, theme } = useGlobalSelector((state: GlobalState) => ({
         version: state.config.version,
         recentProjects: state.config.recentProjects,
+        theme: state.config.theme,
     }));
+
+    const themeConfig = theme !== undefined ? theme : fallbackThemeConfig;
+
+    const { colors: { primary, accent, text, padding, workspacePadding, background } } = themeConfig;
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--primary-color', primary);
+        document.documentElement.style.setProperty('--accent-color', accent);
+        document.documentElement.style.setProperty('--text-color', text);
+        document.documentElement.style.setProperty('--padding-color', padding);
+        document.documentElement.style.setProperty('--workspace-padding-color', workspacePadding);
+        document.documentElement.style.setProperty('--background-color', background);
+    }, [background, padding, primary, accent, workspacePadding, text]);
+
+    console.log(padding);
 
     const [showNewProjectModal, setShowNewProjectModal] = useState<boolean>(false);
 
@@ -45,6 +63,10 @@ export const Home: React.FC = () => {
             .catch((error) => console.error(error));
     }, [workspaceDispatch, globalDispatch, navigate]);
 
+    const navigateToSettings = () => {
+        navigate('/settings');
+    };
+
     useEffect(() => {
         appWindow.setResizable(false);
         appWindow.unmaximize();
@@ -60,13 +82,18 @@ export const Home: React.FC = () => {
 
     return (
         <>
-            <div className="container px-20 pt-24 h-screen overflow-clip">
-                <h1 className="flex gap-4 items-center text-4xl text-white mb-8">
-                    <span>Welcome to <span className="font-medium text-amethyst-500">ACE</span></span>
-                    <span className="rounded-xl px-3 py-1 font-medium text-sm text-amethyst-500 bg-amethyst-500/25">
-                        v{version}
+            <div className="container px-20 pt-16 h-screen overflow-clip">
+                <div className="flex gap-4 items-center text-4xl text-theme-text mb-8">
+                    <span>Welcome to <span className="text-theme-primary font-medium">ACE</span></span>
+                    <span
+                        className="rounded-xl px-3 py-1 font-medium text-sm bg-theme-pd bg-opacity"
+                    >v{version}
                     </span>
-                </h1>
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button onClick={navigateToSettings} className="ml-auto rounded-md p-1 hover:bg-theme-pd transition">
+                        <MdSettings size={25} />
+                    </button>
+                </div>
                 <div className="grid grid-cols-2 gap-6 mb-16">
                     <Card
                         className="flex gap-4 items-center"
@@ -84,7 +111,7 @@ export const Home: React.FC = () => {
                     </Card>
                 </div>
 
-                <h2 className="flex gap-4 items-center text-2xl text-white mb-8">
+                <h2 className="flex gap-4 items-center text-2xl text-theme-text mb-8">
                     Recent Projects
                 </h2>
                 {recentProjects.length === 0 && (
@@ -96,10 +123,10 @@ export const Home: React.FC = () => {
                         .map(({ name, path, timestamp }) => (
                             <Card onClick={() => loadProject(path)} key={path}>
                                 <span className="flex gap-3 items-center">
-                                    <h3 className="font-medium text-2xl text-amethyst-400">{name}</h3>
+                                    <h3 className="font-medium text-2xl text-theme-accent">{name}</h3>
                                     <span className="font-xs">Last opened {timeFromTimestamp(timestamp)}</span>
                                 </span>
-                                <span className="font-mono text-sm text-silver-500">{path}</span>
+                                <span className="font-mono text-sm text-theme-workspace-pd">{path}</span>
                             </Card>
                         ))}
                 </div>

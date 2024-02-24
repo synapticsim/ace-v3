@@ -47,15 +47,15 @@ const SimVarSlider: React.FC<SimVarSliderProps> = memo(({ varKey }) => {
                     />
                     <h6 className="font-mono text-left">
                         {simVar.name}
-                        {simVar.index > 0 && <span className="text-amethyst-400">:{simVar.index}</span>}
+                        {simVar.index > 0 && <span className="text-theme-primary">:{simVar.index}</span>}
                     </h6>
                 </button>
                 <button className="mr-0.5" onClick={() => dispatch(togglePin({ key: formatKey(simVar) }))}>
                     <RiPushpin2Line
                         size={20}
                         className={classNames({
-                            'text-amethyst-400': simVar.pinned,
-                            'text-silver-700': !simVar.pinned,
+                            'text-theme-primary': simVar.pinned,
+                            'text-theme-pd': !simVar.pinned,
                         })}
                     />
                 </button>
@@ -201,14 +201,14 @@ const CollapsibleSimVarSection: React.FC<CollapsibleSimVarSectionProps> = ({ tit
     return (
         <>
             <button
-                className="w-full px-6 py-3 bg-silver-700/50 border-t-2 border-t-silver-700 flex items-center justify-between shadow-sm"
+                className="w-full px-6 py-3 bg-theme-workspace-pd flex items-center justify-between shadow-sm"
                 onClick={() => setCollapsed(!collapsed)}
             >
                 <h5>{title}</h5>
                 <FiChevronLeft
                     size={30}
                     className={classNames(
-                        'text-silver-500 duration-200',
+                        'text-theme-workspace-pd duration-200',
                         { 'rotate-0': collapsed, '-rotate-90': !collapsed },
                     )}
                 />
@@ -245,11 +245,11 @@ export const SimVarsMenu: React.FC<SimVarsMenuProps> = ({ ...props }) => {
             </div>
             <SimVarSection filter={(v) => v.pinned ?? false} />
             <CollapsibleSimVarSection
-                title={<><big className="text-amethyst-400">A</big> Vars</>}
+                title={<><big className="text-theme-primary">A</big> Vars</>}
                 filter={(v) => v.name.toLowerCase().includes(filter.toLowerCase()) && v.type === 'A'}
             />
             <CollapsibleSimVarSection
-                title={<><big className="text-amethyst-400">L</big> Vars</>}
+                title={<><big className="text-theme-primary">L</big> Vars</>}
                 filter={(v) => v.name.toLowerCase().includes(filter.toLowerCase()) && v.type === 'L'}
             />
         </Menu>

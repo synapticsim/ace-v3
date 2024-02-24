@@ -34,7 +34,7 @@ export const CanvasMenu: React.FC<Omit<ContextMenuProps, 'children'>> = (props) 
 
     return (
         <ContextMenu {...props}>
-            <div className="px-4 py-3 bg-silver-700/50 border-b-2 border-b-silver-700 font-medium">
+            <div className="px-4 py-3 bg-theme-pd border-b-2 border-b-theme-workspace-pd font-medium">
                 Instruments
             </div>
             {instruments.map((instrument) => (
