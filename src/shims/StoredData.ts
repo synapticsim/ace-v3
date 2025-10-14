@@ -1,7 +1,5 @@
-export function GetStoredData() {
-
+export function GetStoredData(): [] {
+    return [];
 }
 
-export function SetStoredData() {
-
-}
+export function SetStoredData() {}

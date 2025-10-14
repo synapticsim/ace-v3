@@ -1,7 +1,7 @@
 import { SimVar, simvar } from './SimVar';
-import { Coherent } from './Coherent';
+import { Coherent, RegisterCommBusListener, RegisterViewListener } from './Coherent';
 import { GetStoredData, SetStoredData } from './StoredData';
-import { Avionics, BaseInstrument, GameState, LaunchFlowEvent, registerInstrument, RunwayDesignator } from './MsfsSdk';
+import { ApproachType, Avionics, BaseInstrument, GameState, LaunchFlowEvent, registerInstrument, RunwayDesignator } from './MsfsSdk';
 import { aceFetch } from './fetch';
 import { workspaceStore } from '../redux/workspace';
 import { addEvent } from '../redux/workspace/interactionEventsSlice';
@@ -13,6 +13,8 @@ export function installShims(): void {
     // MSFS global shims
     window.SimVar = SimVar;
     window.Coherent = Coherent;
+    window.RegisterViewListener = RegisterViewListener;
+    window.RegisterCommBusListener = RegisterCommBusListener;
     window.GetStoredData = GetStoredData;
     window.SetStoredData = SetStoredData;
 
@@ -21,6 +23,7 @@ export function installShims(): void {
     window.BaseInstrument = BaseInstrument;
     window.registerInstrument = registerInstrument;
     window.RunwayDesignator = RunwayDesignator;
+    window.ApproachType = ApproachType;
     window.GameState = GameState;
     window.Avionics = Avionics;
     window.LaunchFlowEvent = LaunchFlowEvent;

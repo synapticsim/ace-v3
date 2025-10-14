@@ -51,6 +51,8 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                                 /* MSFS global shims */
                                 window.SimVar = window.parent.SimVar;
                                 window.Coherent = window.parent.Coherent;
+                                window.RegisterViewListener = window.parent.RegisterViewListener;
+                                window.RegisterCommBusListener = window.parent.RegisterCommBusListener;
                                 window.GetStoredData = window.parent.GetStoredData;
                                 window.SetStoredData = window.parent.SetStoredData;
 
@@ -59,6 +61,7 @@ const InstrumentFrame: React.FC<InstrumentFrameProps> = memo(forwardRef(
                                 window.BaseInstrument = window.parent.BaseInstrument;
                                 window.registerInstrument = window.parent.registerInstrument;
                                 window.RunwayDesignator = window.parent.RunwayDesignator;
+                                window.ApproachType = window.parent.ApproachType;
                                 window.GameState = window.parent.GameState;
                                 window.Avionics = window.parent.Avionics;
                                 window.LaunchFlowEvent = window.parent.LaunchFlowEvent;

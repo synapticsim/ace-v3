@@ -1,8 +1,8 @@
 import { aceFetch } from './shims/fetch';
 import { SimVar, simvar } from './shims/SimVar';
-import { Coherent } from './shims/Coherent';
+import { Coherent, RegisterCommBusListener, RegisterViewListener } from './shims/Coherent';
 import { GetStoredData, SetStoredData } from './shims/StoredData';
-import { Avionics, BaseInstrument, GameState, LaunchFlowEvent, registerInstrument, RunwayDesignator } from './shims/MsfsSdk';
+import { ApproachType, Avionics, BaseInstrument, GameState, LaunchFlowEvent, registerInstrument, RunwayDesignator } from './shims/MsfsSdk';
 
 type CustomEventMap = {
     [key in 'triggerInteractionEvent']: CustomEvent<string>;
@@ -14,6 +14,8 @@ declare global {
 
         SimVar: typeof SimVar;
         Coherent: typeof Coherent;
+        RegisterViewListener: typeof RegisterViewListener;
+        RegisterCommBusListener: typeof RegisterCommBusListener;
         GetStoredData: typeof GetStoredData;
         SetStoredData: typeof SetStoredData;
 
@@ -21,6 +23,7 @@ declare global {
         BaseInstrument: typeof BaseInstrument;
         registerInstrument: typeof registerInstrument;
         RunwayDesignator: typeof RunwayDesignator;
+        ApproachType: typeof ApproachType;
         GameState: typeof GameState;
         Avionics: typeof Avionics;
         LaunchFlowEvent: typeof LaunchFlowEvent;

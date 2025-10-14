@@ -34,3 +34,13 @@ export namespace Coherent {
         return Promise.reject(`Unsupported Coherent call: ${name}`);
     }
 }
+
+export function RegisterViewListener() {
+    return {
+        on: () => {},
+        off: () => {},
+        triggerToAllSubscribers: () => {},
+    };
+}
+
+export function RegisterCommBusListener() {}

@@ -31,6 +31,10 @@ export namespace SimVar {
         workspaceStore.dispatch(setSimVar({ id, value }));
         return value;
     }
+
+    export function GetGameVarValue(): string {
+        return "";
+    }
 }
 
 /**

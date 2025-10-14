@@ -27,6 +27,21 @@ export enum RunwayDesignator {
     RUNWAY_DESIGNATOR_B,
 }
 
+export enum ApproachType {
+    APPROACH_TYPE_UNKNOWN,
+    APPROACH_TYPE_GPS,
+    APPROACH_TYPE_VOR,
+    APPROACH_TYPE_NDB,
+    APPROACH_TYPE_ILS,
+    APPROACH_TYPE_LOCALIZER,
+    APPROACH_TYPE_SDF,
+    APPROACH_TYPE_LDA,
+    APPROACH_TYPE_VORDME,
+    APPROACH_TYPE_NDBDME,
+    APPROACH_TYPE_RNAV,
+    APPROACH_TYPE_LOCALIZER_BACK_COURSE,
+}
+
 export enum GameState {
     mainmenu,
     loading,
