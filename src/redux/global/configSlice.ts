@@ -2,6 +2,9 @@ import { createAsyncThunk, createSlice, Middleware, PayloadAction } from '@redux
 import { Platform, platform as getPlatform } from '@tauri-apps/api/os';
 import { getVersion } from '@tauri-apps/api/app';
 import { AceProject } from '../../types';
+import { ThemeConfig, fallbackThemeConfig } from './ui/uitheme';
+
+const THEME_LOCAL_STORAGE_KEY = 'ace_ui_theme';
 
 export interface RecentProject {
     name: string;
@@ -13,11 +16,14 @@ interface ConfigState {
     platform?: Platform;
     version?: string;
     recentProjects?: RecentProject[];
+    theme?: ThemeConfig;
 }
 
 const configSlice = createSlice({
     name: 'config',
-    initialState: {} as ConfigState,
+    initialState: {
+        theme: JSON.parse(localStorage.getItem(THEME_LOCAL_STORAGE_KEY) ?? JSON.stringify(fallbackThemeConfig)) as ThemeConfig,
+    } as ConfigState,
     reducers: {
         pushRecentProject(state, action: PayloadAction<AceProject>) {
             if (state.recentProjects === undefined) return;
@@ -30,25 +36,35 @@ const configSlice = createSlice({
                 timestamp: new Date().toISOString(),
             });
         },
+        setTheme: (state, action: PayloadAction<ThemeConfig>) => {
+            state.theme = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(initConfig.fulfilled, (state, action) => action.payload);
     },
 });
 
-export const { pushRecentProject } = configSlice.actions;
-export const configReducer = configSlice.reducer;
-
 const LOCAL_STORAGE_KEY = 'ace_recent_projects';
+
+export const { pushRecentProject, setTheme } = configSlice.actions;
+export const configReducer = configSlice.reducer;
 
 export const localStorageMiddleware: Middleware = (store) => (next) => (action) => {
     next(action);
 
-    const { recentProjects } = store.getState().config;
+    const { recentProjects, theme } = store.getState().config;
     if (recentProjects !== undefined) {
         localStorage.setItem(
             LOCAL_STORAGE_KEY,
             JSON.stringify(recentProjects),
+        );
+    }
+
+    if (theme !== undefined) {
+        localStorage.setItem(
+            THEME_LOCAL_STORAGE_KEY,
+            JSON.stringify(theme),
         );
     }
 };
@@ -64,6 +80,9 @@ export const initConfig = createAsyncThunk(
             ? []
             : JSON.parse(local) as RecentProject[];
 
-        return { platform, version, recentProjects };
+        const storedTheme = localStorage.getItem(THEME_LOCAL_STORAGE_KEY);
+        const theme = storedTheme !== null ? JSON.parse(storedTheme) as ThemeConfig : fallbackThemeConfig;
+
+        return { platform, version, recentProjects, theme };
     },
 );
